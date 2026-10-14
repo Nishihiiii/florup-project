@@ -1,0 +1,5344 @@
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&display=swap');
+:root {
+  font-family: 'Unbounded',sans-serif;
+  color: #503e2f;
+  background: #fff0d3;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --ink: #503e2f;
+  --olive: #908e55;
+  --cream: #fff0d3;
+  --card: #f6e5c3;
+  --tan: #ac8e6c;
+  --pale: #e8d9bc;
+  --line: #c9b88f;
+  --muted: rgba(80,62,47,.68)
+}
+
+* {
+  box-sizing: border-box
+}
+
+html {
+  scroll-behavior: smooth
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--cream)
+}
+
+button,input,textarea {
+  font: inherit
+}
+
+button {
+  cursor: pointer
+}
+
+button: focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible {
+  outline: 3px solid #b1a96b;
+  outline-offset: 3px
+}
+
+button: disabled {
+  opacity: .5;
+  cursor: not-allowed
+}
+
+.app-shell {
+  width: 100%;
+  max-width: 1686px;
+  margin: 0 auto;
+  padding: 0 0 0;
+  overflow: visible
+}
+
+/* 01. Шапка сайта и навигация */
+.site-header {
+  height: 89px;
+  max-width: 1396px;
+  width: calc(100% - 80px);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  margin: 0 auto 0;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  background: var(--olive);
+  border: 5px solid rgba(201,184,143,.78);
+  border-radius: 30px;
+  box-shadow: 0 13px 0 rgba(144,142,85,.16)
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  border: 0;
+  background: none;
+  color: #ecdfc0;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  padding: 0
+}
+
+.brand-icon-placeholder,.footer-logo-placeholder {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 1px dashed rgba(236,223,192,.62);
+  border-radius: 50%;
+  flex: none
+}
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px,1.8vw,30px);
+  margin: 0 auto
+}
+
+.nav-link {
+  border: 0;
+  background: transparent;
+  color: #ecdfc0;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 12px 0
+}
+
+.nav-link:hover,.nav-link.active {
+  text-decoration: underline;
+  text-underline-offset: 5px
+}
+
+.header-account {
+  height: 39px;
+  min-width: 105px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0 20px
+}
+
+.header-avatar-placeholder {
+  width: 35px;
+  height: 35px;
+  flex: none;
+  border: 1px dashed rgba(236,223,192,.65);
+  border-radius: 50%;
+  background: transparent
+}
+
+/* 02. Подвал сайта */
+.site-footer {
+  margin: 48px 0 0;
+  background: var(--olive);
+  color: #ecdfc0;
+  min-height: 274px;
+  border-radius: 24px 24px 0 0;
+  padding: 28px 4.5% 30px;
+  display: grid;
+  grid-template-columns: 1.45fr 1fr 1.15fr .65fr;
+  gap: 34px;
+  border-top: 24px solid #e0d2b8
+}
+
+.footer-brand-block {
+  max-width: 450px
+}
+
+.footer-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px
+}
+
+.footer-logo-row strong {
+  font-size: 32px;
+  font-weight: 900
+}
+
+.footer-brand-block p {
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 20px 0 0;
+  max-width: 420px;
+  color: rgba(236,223,192,.9)
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start
+}
+
+.footer-column h3 {
+  font-size: 15px;
+  margin: 2px 0 8px;
+  color: #ecdfc0;
+  font-weight: 800
+}
+
+.footer-column button,.footer-column a,.footer-column span {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: rgba(236,223,192,.92);
+  text-decoration: none;
+  text-align: left;
+  font-size: 10px;
+  line-height: 1.6
+}
+
+.footer-column button:hover,.footer-column a:hover {
+  text-decoration: underline
+}
+
+/* 03. Главная страница: первый экран */
+.home-page {
+  padding: 0 5.8%
+}
+
+.home-hero {
+  display: grid;
+  grid-template-columns: 42% 58%;
+  min-height: 930px;
+  position: relative;
+  padding-top: 20px
+}
+
+.hero-copy {
+  padding: 65px 0 0 15px;
+  position: relative;
+  z-index: 2
+}
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 1.8px;
+  color: var(--olive);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px
+}
+
+.eyebrow>span {
+  display: inline-block;
+  width: 24px;
+  height: 1px;
+  background: var(--olive)
+}
+
+.hero-copy h1 {
+  font-size: clamp(44px,5.2vw,82px);
+  line-height: 1.15;
+  letter-spacing: -3.5px;
+  margin: 26px 0 24px;
+  font-weight: 900
+}
+
+.hero-description {
+  max-width: 555px;
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--muted)
+}
+
+.fact-card {
+  margin-top: 58px;
+  background: var(--tan);
+  color: #ecdfc0;
+  border-radius: 12px;
+  width: min(100%,365px);
+  padding: 22px 25px;
+  box-shadow: 0 5px 0 rgba(80,62,47,.08)
+}
+
+.fact-card strong {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 15px
+}
+
+.fact-card p {
+  margin: 0;
+  background: rgba(246,229,195,.32);
+  border-radius: 7px;
+  padding: 17px;
+  font-size: 12px;
+  line-height: 1.75;
+  color: #503e2f
+}
+
+.hero-art-wrap {
+  height: 900px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center
+}
+
+.hero-plant-button {
+  width: min(100%,315px);
+  height: 568px;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  padding: 18px 24px
+}
+
+.hero-art-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 65px;
+  background: #f6e5c3
+}
+
+.hero-plant-button:before {
+  content: "";
+  position: absolute;
+  inset: 35px 20px 40px;
+  border-radius: 50%;
+  background: rgba(172,142,108,.1)
+}
+
+.hero-plant-button svg {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+  transition: transform .25s
+}
+
+.hero-plant-button:hover svg {
+  transform: scale(1.035)
+}
+
+.tool-placeholder {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border: 2px dashed rgba(144,142,85,.5);
+  border-radius: 50%
+}
+
+.tool-one {
+  right: 10%;
+  top: 7%
+}
+
+.tool-two {
+  right: -3%;
+  top: 30%
+}
+
+.tool-three {
+  right: 7%;
+  bottom: 15%
+}
+
+.tool-four {
+  left: 4%;
+  bottom: 28%
+}
+
+.tool-five {
+  left: 16%;
+  top: 49%
+}
+
+.hero-catalog-button {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  background: var(--olive);
+  border: 0;
+  color: #ecdfc0;
+  border-radius: 28px;
+  padding: 14px 35px;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap
+}
+
+.hero-catalog-button:hover {
+  background: #777644
+}
+
+.hero-hint {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap
+}
+
+/* 04. Главная страница: о нас и карточки команды */
+.section-rule {
+  height: 1px;
+  background: var(--line);
+  margin: 0 0 76px
+}
+
+.home-about {
+  padding: 0 0 80px
+}
+
+.about-intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+  margin-bottom: 50px
+}
+
+.about-intro h2 {
+  font-size: clamp(54px,7vw,90px);
+  line-height: 1;
+  margin: 0;
+  font-weight: 900;
+  letter-spacing: -3px
+}
+
+.about-intro p {
+  max-width: 500px;
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--muted);
+  margin: 4px 0 0
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 24px;
+  align-items: end
+}
+
+.team-card {
+  overflow: hidden;
+  border-radius: 30px;
+  background: var(--card);
+  text-align: center;
+  min-width: 0
+}
+
+.image-placeholder {
+  background: linear-gradient(135deg,#f6e5c3,#e8d9bc);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: #ac8e6c;
+  min-height: 150px;
+  position: relative;
+  overflow: hidden
+}
+
+.placeholder-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #e9e8d2;
+  border: 1px dashed #b8aa83
+}
+
+.image-placeholder small {
+  font-size: 10px;
+  text-align: center
+}
+
+.team-card>.image-placeholder {
+  height: 400px
+}
+
+.team-name {
+  min-height: 122px;
+  background: var(--olive);
+  color: #ecdfc0;
+  padding: 22px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px
+}
+
+.team-name strong {
+  font-size: 23px
+}
+
+.team-name span {
+  font-size: 12px
+}
+
+/* 05. Главная страница: как мы помогаем */
+.home-help {
+  padding-bottom: 35px
+}
+
+.help-heading {
+  margin: 0 0 48px
+}
+
+.help-heading small {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--olive);
+  font-weight: 700
+}
+
+.help-heading h2 {
+  font-size: clamp(44px,5.5vw,76px);
+  letter-spacing: -3px;
+  margin: 22px 0 18px;
+  font-weight: 900
+}
+
+.help-heading p {
+  font-size: 15px;
+  color: var(--muted)
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 24px
+}
+
+.step-card {
+  background: var(--card);
+  border-radius: 35px;
+  min-height: 400px;
+  padding: 70px 34px 32px;
+  position: relative;
+  box-shadow: 0 5px 10px rgba(80,62,47,.15)
+}
+
+.step-number {
+  position: absolute;
+  right: 10px;
+  top: -40px;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: var(--olive);
+  border: 8px solid var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ecdfc0;
+  font-size: 48px;
+  font-weight: 700
+}
+
+.step-card h3 {
+  font-size: 25px;
+  margin: 0 0 25px
+}
+
+.step-card p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: rgba(80,62,47,.9)
+}
+
+.step-card>button {
+  position: absolute;
+  right: 25px;
+  bottom: 20px;
+  border: 0;
+  background: transparent;
+  color: var(--olive);
+  font-size: 28px
+}
+
+.home-catalog-strip {
+  margin-top: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px
+}
+
+.home-catalog-strip h3 {
+  font-size: 28px
+}
+
+.olive-button {
+  border: 0;
+  border-radius: 30px;
+  background: var(--olive);
+  color: #ecdfc0;
+  padding: 13px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap
+}
+
+.olive-button:hover {
+  background: #777644
+}
+
+.empty-state,.db-empty {
+  margin: 24px auto 0;
+  text-align: center;
+  background: rgba(246,229,195,.68);
+  border-radius: 28px;
+  padding: 48px 25px;
+  max-width: 800px
+}
+
+.empty-state strong,.db-empty h2 {
+  font-size: 23px;
+  margin: 0 0 12px
+}
+
+.empty-state p,.db-empty p {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--muted);
+  margin: 0 auto;
+  max-width: 600px
+}
+
+.plant-grid {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 22px;
+  margin-top: 25px
+}
+
+.plant-card {
+  background: var(--card);
+  border: 0;
+  border-radius: 22px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+  color: var(--ink)
+}
+
+.plant-card .image-placeholder {
+  width: 100%;
+  height: 200px;
+  border-radius: 16px
+}
+
+.plant-card strong {
+  font-size: 17px
+}
+
+/* 06. Общая структура внутренних страниц */
+.page {
+  max-width: 1430px;
+  width: calc(100% - 100px);
+  margin: 0 auto;
+  padding: 24px 0 60px;
+  min-height: 800px
+}
+
+.page-heading {
+  margin: 0 0 34px
+}
+
+.page-heading h1,.diagnostics-title h1 {
+  font-size: clamp(44px,5vw,70px);
+  font-weight: 900;
+  letter-spacing: -2.6px;
+  line-height: 1.2;
+  margin: 0 0 14px
+}
+
+.page-heading p,.diagnostics-title p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--muted);
+  max-width: 850px;
+  margin: 0
+}
+
+/* 07. Каталог и карточка растения */
+.catalog-page {
+  padding-top: 24px
+}
+
+.catalog-page .page-heading {
+  margin-bottom: 25px
+}
+
+.catalog-page .page-heading h1 {
+  font-size: 64px
+}
+
+.catalog-search {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px
+}
+
+.catalog-search input,.field-search input {
+  height: 52px;
+  border: 2px solid #c7b78f;
+  border-radius: 28px;
+  background: #f6e5c3;
+  padding: 0 24px;
+  flex: 1;
+  min-width: 0;
+  color: var(--ink);
+  font-size: 12px
+}
+
+.catalog-chips {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-bottom: 28px
+}
+
+.catalog-chips button,.map-chips button {
+  border: 1px solid #c8b98f;
+  background: #e9dfb9;
+  border-radius: 20px;
+  padding: 8px 13px;
+  color: #655c3d;
+  font-size: 10px
+}
+
+.catalog-chips button.selected {
+  background: var(--olive);
+  color: #fff0d3
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 22px
+}
+
+.catalog-plant-card {
+  border: 0;
+  background: var(--card);
+  border-radius: 22px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  color: var(--ink);
+  box-shadow: 0 5px 0 rgba(80,62,47,.12);
+  min-width: 0
+}
+
+.catalog-plant-image {
+  height: 180px;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 12px
+}
+
+.catalog-plant-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover
+}
+
+.db-image-placeholder {
+  height: 100%;
+  background: linear-gradient(135deg,#e7dfc4,#f7e9c8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ac8e6c;
+  font-size: 11px
+}
+
+.catalog-plant-card strong {
+  font-size: 14px;
+  line-height: 1.5
+}
+
+.catalog-plant-card small {
+  font-size: 10px;
+  color: var(--muted);
+  margin: 6px 0 12px
+}
+
+.plant-card-pill {
+  align-self: flex-start;
+  border-radius: 15px;
+  background: var(--olive);
+  color: #f6e5c3;
+  padding: 7px 11px;
+  font-size: 10px
+}
+
+.db-empty {
+  margin: 30px auto
+}
+
+.plant-detail-page {
+  padding-top: 28px
+}
+
+.back-link {
+  border: 0;
+  background: none;
+  color: #998c68;
+  font-size: 12px;
+  margin: 0 0 25px;
+  padding: 0
+}
+
+.plant-detail-top {
+  display: grid;
+  grid-template-columns: 42% 1fr;
+  gap: 40px;
+  align-items: center
+}
+
+.plant-detail-photo {
+  height: 480px;
+  border-radius: 28px;
+  overflow: hidden;
+  background: var(--card)
+}
+
+.plant-detail-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover
+}
+
+.plant-detail-photo .image-placeholder {
+  height: 100%
+}
+
+.plant-detail-copy h1 {
+  font-size: 54px;
+  margin: 22px 0 10px;
+  line-height: 1.15
+}
+
+.plant-detail-copy p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--muted)
+}
+
+.latin {
+  font-style: italic
+}
+
+.detail-tags {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap
+}
+
+.detail-tags span {
+  border-radius: 18px;
+  background: var(--olive);
+  color: #f6e5c3;
+  padding: 7px 12px;
+  font-size: 10px
+}
+
+.section-title {
+  font-size: 27px;
+  margin: 36px 0 18px
+}
+
+.care-requirements {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 16px
+}
+
+.care-requirements article {
+  background: var(--card);
+  border-radius: 25px;
+  padding: 25px
+}
+
+.care-requirements h3 {
+  font-size: 15px;
+  margin: 0 0 12px
+}
+
+.care-requirements p {
+  font-size: 11px;
+  line-height: 1.8;
+  color: var(--muted)
+}
+
+.similar-placeholder {
+  max-width: 400px;
+  border-radius: 22px;
+  overflow: hidden
+}
+
+/* 08. Уход за растением и календарь */
+.care-dashboard {
+  display: grid;
+  grid-template-columns: 35% 1fr;
+  gap: 30px
+}
+
+.my-plants,.care-main {
+  background: transparent;
+  min-width: 0
+}
+
+.my-plants h2 {
+  font-size: 25px;
+  margin: 0 0 22px
+}
+
+.care-empty {
+  background: var(--card);
+  border-radius: 25px;
+  padding: 25px;
+  margin-bottom: 15px
+}
+
+.care-empty p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted)
+}
+
+.my-plant-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: 0;
+  border-radius: 18px;
+  background: var(--card);
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  text-align: left;
+  color: var(--ink)
+}
+
+.my-plant-item .image-placeholder {
+  width: 46px;
+  height: 46px;
+  min-height: 46px;
+  border-radius: 50%
+}
+
+.my-plant-item .image-placeholder small {
+  display: none
+}
+
+.add-plant-button {
+  width: 100%;
+  padding: 16px;
+  border: 2px dashed #a79b62;
+  border-radius: 18px;
+  background: transparent;
+  color: var(--olive);
+  font-size: 12px
+}
+
+.care-tabs {
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px
+}
+
+.care-tabs button,.profile-tabs button {
+  border: 0;
+  background: transparent;
+  color: #746747;
+  padding: 12px 0;
+  font-size: 13px;
+  font-weight: 700
+}
+
+.care-tabs button.active,.profile-tabs button.active {
+  border-bottom: 3px solid var(--olive);
+  color: var(--ink)
+}
+
+.calendar-box {
+  background: var(--card);
+  border-radius: 30px;
+  padding: 20px;
+  margin-bottom: 22px
+}
+
+.calendar-week {
+  display: grid;
+  grid-template-columns: repeat(7,1fr);
+  gap: 7px
+}
+
+.calendar-week button {
+  border: 0;
+  border-radius: 12px;
+  background: #e8dfbd;
+  padding: 12px 3px;
+  color: #7c7650;
+  font-size: 10px
+}
+
+.calendar-week button strong {
+  display: block;
+  font-size: 18px;
+  margin-top: 8px
+}
+
+.calendar-week button.today {
+  background: var(--olive);
+  color: #f6e5c3
+}
+
+.calendar-note {
+  margin-top: 20px;
+  background: #fff0d3;
+  border-radius: 20px;
+  padding: 20px;
+  min-height: 150px
+}
+
+.calendar-note h3 {
+  font-size: 14px
+}
+
+.calendar-note p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted)
+}
+
+.care-history {
+  background: var(--card);
+  border-radius: 25px;
+  padding: 20px
+}
+
+.care-history h3 {
+  margin: 0 0 12px;
+  font-size: 16px
+}
+
+.care-history div {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 13px 0;
+  border-bottom: 1px solid #dfd0ad;
+  font-size: 11px
+}
+
+.care-history div:last-child {
+  border: 0
+}
+
+.care-history span {
+  color: var(--muted)
+}
+
+.diagnostics-page {
+  max-width: 1430px;
+  padding-top: 24px
+}
+
+/* 09. Диагностика */
+.diagnostics-title {
+  margin: 0 0 48px 60px
+}
+
+.diagnostics-title h1 {
+  font-size: 66px;
+  margin-bottom: 14px
+}
+
+.diagnostics-title p {
+  max-width: 1360px
+}
+
+.diagnostics-upload {
+  margin: 0 0 46px;
+  background: var(--card);
+  border-radius: 32px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center
+}
+
+.diagnostic-dropzone {
+  width: 100%;
+  min-height: 340px;
+  border: 2px dashed rgba(80,62,47,.45);
+  border-radius: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--olive);
+  cursor: pointer;
+  text-align: center;
+  padding: 25px
+}
+
+.diagnostic-dropzone .upload-symbol {
+  font-size: 54px;
+  font-weight: 700;
+  line-height: 1
+}
+
+.diagnostic-dropzone strong {
+  font-size: 14px;
+  font-weight: 500
+}
+
+.diagnostic-dropzone>span:not(.upload-symbol) {
+  font-size: 11px
+}
+
+.diagnostic-dropzone small {
+  margin-top: 12px;
+  background: #fff0d3;
+  padding: 10px 18px;
+  border-radius: 20px;
+  font-size: 10px;
+  box-shadow: 0 3px 6px #c9b88f
+}
+
+.diagnostic-dropzone input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0
+}
+
+.analyze-button {
+  margin-top: 22px;
+  background: var(--olive);
+  color: #ecdfc0;
+  border: 0;
+  border-radius: 28px;
+  padding: 18px 38px;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 5px 10px rgba(0,0,0,.16)
+}
+
+.diagnostic-message {
+  font-size: 12px;
+  color: #665d3d;
+  background: #fff0d3;
+  border-radius: 12px;
+  padding: 12px 18px
+}
+
+.symptom-section {
+  padding: 0 20px
+}
+
+.symptom-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px
+}
+
+.symptom-heading h2 {
+  font-size: 26px;
+  margin: 0 0 10px
+}
+
+.symptom-heading small {
+  font-size: 10px;
+  color: var(--muted)
+}
+
+.symptom-search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 30px;
+  background: var(--card);
+  height: 50px;
+  width: min(45%,580px);
+  padding: 0 20px;
+  color: var(--olive)
+}
+
+.symptom-search input {
+  border: 0;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 11px;
+  color: var(--ink)
+}
+
+.symptom-grid {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 18px;
+  overflow: hidden
+}
+
+.symptom-card {
+  border: 0;
+  background: var(--card);
+  border-radius: 28px;
+  padding: 15px;
+  text-align: left;
+  box-shadow: 0 5px 8px rgba(80,62,47,.16);
+  color: var(--ink);
+  min-width: 0
+}
+
+.symptom-placeholder {
+  height: 185px;
+  border-radius: 20px;
+  background: linear-gradient(135deg,#eadfbd,#f6e5c3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a9986b;
+  font-size: 10px;
+  margin-bottom: 14px;
+  border: 1px dashed #c3b38c
+}
+
+.symptom-card strong {
+  font-size: 14px;
+  display: block;
+  padding: 0 4px 8px
+}
+
+.db-note {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin-top: 22px
+}
+
+/* 10. Карта магазинов */
+.map-layout {
+  display: grid;
+  grid-template-columns: 32% 1fr;
+  gap: 25px;
+  background: var(--card);
+  padding: 20px;
+  border-radius: 30px
+}
+
+.map-filters {
+  background: #f8e9c9;
+  border-radius: 20px;
+  padding: 22px
+}
+
+.map-filters h2 {
+  font-size: 18px;
+  margin: 0 0 15px
+}
+
+.map-filters h3 {
+  font-size: 13px;
+  margin: 24px 0 12px
+}
+
+.field-search {
+  display: flex;
+  align-items: center;
+  gap: 8px
+}
+
+.field-search input {
+  height: 42px;
+  padding: 0 15px;
+  font-size: 10px
+}
+
+.map-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px
+}
+
+.shop-empty {
+  background: #f6e5c3;
+  border-radius: 18px;
+  padding: 18px
+}
+
+.shop-empty strong {
+  font-size: 12px
+}
+
+.shop-empty p {
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--muted)
+}
+
+.map-placeholder {
+  min-height: 500px;
+  background: #e9e5d4;
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column
+}
+
+.map-placeholder .image-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 460px;
+  background: repeating-linear-gradient(45deg,#e9e5d4,#e9e5d4 18px,#e1dfcd 18px,#e1dfcd 20px)
+}
+
+.map-placeholder p {
+  font-size: 11px;
+  color: var(--muted)
+}
+
+/* 11. Сообщество и публикации */
+.community-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 25px
+}
+
+.community-feed {
+  max-width: 1040px;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 25px
+}
+
+.post-card {
+  background: #f6e5c3;
+  border-radius: 22px;
+  padding: 25px;
+  box-shadow: 0 3px 8px rgba(80,62,47,.1)
+}
+
+.post-author {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 13px
+}
+
+.post-author .image-placeholder {
+  width: 48px;
+  height: 48px;
+  min-height: 48px;
+  border-radius: 50%
+}
+
+.post-author .image-placeholder small {
+  display: none
+}
+
+.post-card>p {
+  font-size: 12px;
+  line-height: 1.7
+}
+
+.post-image {
+  height: 330px;
+  border-radius: 16px;
+  margin: 18px 0
+}
+
+.post-actions {
+  display: flex;
+  gap: 18px
+}
+
+.post-actions button,.post-like,.post-comment {
+  border: 0;
+  background: transparent;
+  color: #80774f;
+  font-size: 12px;
+  padding: 10px
+}
+
+.create-post {
+  max-width: 1040px;
+  margin: 20px auto;
+  background: var(--card);
+  padding: 25px;
+  border-radius: 24px
+}
+
+.create-post h2 {
+  font-size: 18px
+}
+
+.create-post textarea {
+  width: 100%;
+  min-height: 130px;
+  background: #fff0d3;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  resize: vertical;
+  font-size: 12px
+}
+
+.create-post .image-placeholder {
+  margin: 15px 0;
+  border: 1px dashed var(--line);
+  border-radius: 12px
+}
+
+/* 12. Профиль и редактирование профиля */
+.profile-top {
+  display: grid;
+  grid-template-columns: 200px 1fr 70px;
+  gap: 25px;
+  align-items: center;
+  background: var(--card);
+  border-radius: 25px;
+  padding: 30px
+}
+
+.profile-photo {
+  height: 200px;
+  border-radius: 50%
+}
+
+.profile-top h1 {
+  font-size: 30px;
+  margin: 0 0 8px
+}
+
+.profile-top p {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--muted)
+}
+
+.profile-stats {
+  display: flex;
+  gap: 30px;
+  margin-top: 22px
+}
+
+.profile-stats span {
+  font-size: 10px;
+  color: var(--muted)
+}
+
+.profile-stats b {
+  display: block;
+  font-size: 19px;
+  color: var(--ink)
+}
+
+.settings-icon-placeholder {
+  width: 55px;
+  height: 55px;
+  border: 1px dashed #b7a875;
+  border-radius: 50%;
+  background: transparent
+}
+
+.profile-tabs {
+  display: flex;
+  gap: 30px;
+  border-bottom: 1px solid var(--line);
+  margin: 25px 0
+}
+
+/* 13. Настройки */
+.settings-panel {
+  max-width: 900px;
+  margin: 20px auto;
+  background: var(--card);
+  border: 2px solid #a9966f;
+  border-radius: 25px;
+  padding: 30px
+}
+
+.settings-panel h1 {
+  font-size: 34px;
+  margin: 0 0 22px
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  border: 1px solid #b9a880;
+  background: #f7e9c9;
+  padding: 22px;
+  border-radius: 14px;
+  text-align: left;
+  color: var(--ink);
+  font-size: 14px;
+  margin-bottom: 10px
+}
+
+.setting-row span {
+  font-size: 10px;
+  color: var(--muted)
+}
+
+.setting-row b {
+  margin-left: 20px;
+  color: var(--olive)
+}
+
+/* 14. Вход и регистрация */
+.auth-page {
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 35px 15px
+}
+
+.auth-card {
+  width: min(100%,420px);
+  background: #fff0d3;
+  border: 2px solid #b7a67f;
+  border-radius: 25px;
+  padding: 35px 30px;
+  box-shadow: 0 5px 0 rgba(80,62,47,.12)
+}
+
+.auth-card h1 {
+  text-align: center;
+  font-size: 34px;
+  margin: 0 0 28px
+}
+
+.auth-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 20px
+}
+
+.auth-card input {
+  height: 46px;
+  border: 1px solid #c8b98e;
+  border-radius: 12px;
+  background: #f6e5c3;
+  padding: 0 14px;
+  font-size: 11px
+}
+
+.auth-submit {
+  width: 100%;
+  margin: 8px 0 16px
+}
+
+.auth-card small {
+  font-size: 10px;
+  color: var(--muted)
+}
+
+.auth-card small button {
+  border: 0;
+  background: none;
+  color: var(--olive);
+  font-weight: 700;
+  font-size: 10px;
+  padding: 0
+}
+
+.demo-note {
+  font-size: 9px;
+  line-height: 1.7;
+  color: #8c7b55;
+  margin: 20px 0 0
+}
+
+.form-error {
+  font-size: 11px;
+  color: #9a3e32
+}
+
+.toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 80;
+  max-width: 420px;
+  background: #503e2f;
+  color: #fff0d3;
+  padding: 16px 20px;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0,0,0,.2);
+  font-size: 11px
+}
+
+.modal-shade {
+  position: fixed;
+  inset: 0;
+  background: rgba(44,36,25,.55);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow: auto
+}
+
+.plant-modal {
+  position: relative;
+  width: min(100%,1100px);
+  background: var(--cream);
+  border-radius: 25px;
+  padding: 20px;
+  max-height: 90vh;
+  overflow: auto
+}
+
+.modal-x {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  z-index: 3;
+  border: 0;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  background: var(--olive);
+  color: #fff0d3;
+  font-size: 23px
+}
+
+.plant-modal .page {
+  width: 100%;
+  min-height: 0;
+  padding: 20px
+}
+
+@media(max-width:1100px) {
+  .site-header {
+    width: calc(100% - 32px);
+    gap: 12px
+  }
+  .brand {
+    font-size: 22px
+  }
+  .main-nav {
+    gap: 12px
+  }
+  .nav-link {
+    font-size: 9px
+  }
+  .header-account {
+    min-width: 80px;
+    padding: 0 12px
+  }
+  .home-page {
+    padding: 0 3%
+  }
+  .home-hero {
+    min-height: 740px
+  }
+  .hero-art-wrap {
+    height: 720px
+  }
+  .hero-plant-button {
+    height: 480px;
+    width: 267px
+  }
+  .team-card>.image-placeholder {
+    height: 300px
+  }
+  .page {
+    width: calc(100% - 60px)
+  }
+  .catalog-grid {
+    grid-template-columns: repeat(3,minmax(0,1fr))
+  }
+  .diagnostic-dropzone {
+    min-height: 300px
+  }
+  .footer-brand-block p {
+    font-size: 10px
+  }
+}
+
+@media(max-width:760px) {
+  .site-header {
+    height: auto;
+    min-height: 74px;
+    flex-wrap: wrap;
+    position: relative;
+    border-radius: 22px;
+    padding: 12px;
+    margin: 0 auto 18px
+  }
+  .brand {
+    font-size: 21px
+  }
+  .brand-icon-placeholder {
+    width: 17px;
+    height: 17px
+  }
+  .main-nav {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    justify-content: flex-start;
+    gap: 18px;
+    padding: 5px 0
+  }
+  .nav-link {
+    font-size: 10px
+  }
+  .header-account {
+    margin-left: auto;
+    height: 34px;
+    min-width: 70px;
+    font-size: 11px
+  }
+  .header-avatar-placeholder {
+    width: 30px;
+    height: 30px
+  }
+  .home-page {
+    padding: 0 18px
+  }
+  .home-hero {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding-top: 0
+  }
+  .hero-copy {
+    padding: 35px 4px 0
+  }
+  .hero-copy h1 {
+    font-size: 44px;
+    letter-spacing: -2px
+  }
+  .hero-description {
+    font-size: 12px
+  }
+  .fact-card {
+    margin-top: 28px
+  }
+  .hero-art-wrap {
+    height: 610px;
+    margin-top: 10px
+  }
+  .hero-plant-button {
+    width: 230px;
+    height: 420px
+  }
+  .hero-catalog-button {
+    bottom: 25px
+  }
+  .hero-hint {
+    bottom: 0
+  }
+  .tool-placeholder {
+    width: 35px;
+    height: 35px
+  }
+  .section-rule {
+    margin-bottom: 35px
+  }
+  .about-intro {
+    display: block;
+    margin-bottom: 28px
+  }
+  .about-intro h2 {
+    font-size: 58px
+  }
+  .about-intro p {
+    font-size: 12px;
+    margin-top: 20px
+  }
+  .team-grid,.steps-grid {
+    grid-template-columns: 1fr;
+    gap: 30px
+  }
+  .team-card>.image-placeholder {
+    height: 280px
+  }
+  .team-name {
+    min-height: 90px
+  }
+  .team-name strong {
+    font-size: 20px
+  }
+  .step-card {
+    min-height: 270px;
+    padding: 45px 24px 45px
+  }
+  .step-number {
+    width: 60px;
+    height: 60px;
+    font-size: 30px;
+    top: -25px;
+    border-width: 5px
+  }
+  .help-heading h2 {
+    font-size: 40px
+  }
+  .help-heading p {
+    font-size: 12px;
+    line-height: 1.7
+  }
+  .home-catalog-strip {
+    align-items: flex-start;
+    flex-direction: column
+  }
+  .home-catalog-strip h3 {
+    font-size: 22px
+  }
+  .site-footer {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    padding: 24px 20px;
+    margin-top: 25px;
+    border-top-width: 14px
+  }
+  .footer-logo-row strong {
+    font-size: 24px
+  }
+  .footer-brand-block p {
+    font-size: 10px
+  }
+  .footer-column {
+    gap: 11px
+  }
+  .footer-column h3 {
+    font-size: 12px
+  }
+  .footer-column button,.footer-column a,.footer-column span {
+    font-size: 9px
+  }
+  .page {
+    width: calc(100% - 34px);
+    padding: 25px 0 35px;
+    min-height: 500px
+  }
+  .page-heading h1,.diagnostics-title h1 {
+    font-size: 42px;
+    letter-spacing: -1.5px
+  }
+  .page-heading p,.diagnostics-title p {
+    font-size: 11px
+  }
+  .catalog-page .page-heading h1 {
+    font-size: 45px
+  }
+  .catalog-search {
+    flex-direction: column
+  }
+  .catalog-search input {
+    flex: auto;
+    width: 100%
+  }
+  .catalog-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 12px
+  }
+  .catalog-plant-card {
+    padding: 9px;
+    border-radius: 15px
+  }
+  .catalog-plant-image {
+    height: 135px
+  }
+  .catalog-plant-card strong {
+    font-size: 11px
+  }
+  .catalog-plant-card small {
+    font-size: 9px
+  }
+  .catalog-chips {
+    gap: 6px
+  }
+  .catalog-chips button {
+    font-size: 9px;
+    padding: 7px 9px
+  }
+  .plant-detail-top {
+    grid-template-columns: 1fr;
+    gap: 20px
+  }
+  .plant-detail-photo {
+    height: 300px
+  }
+  .plant-detail-copy h1 {
+    font-size: 37px
+  }
+  .care-requirements {
+    grid-template-columns: 1fr
+  }
+  .care-dashboard {
+    grid-template-columns: 1fr
+  }
+  .care-main {
+    margin-top: 20px
+  }
+  .calendar-week {
+    gap: 3px
+  }
+  .calendar-week button {
+    font-size: 8px;
+    padding: 8px 1px
+  }
+  .calendar-week button strong {
+    font-size: 13px
+  }
+  .care-history div {
+    font-size: 9px
+  }
+  .diagnostics-title {
+    margin: 0 0 25px
+  }
+  .diagnostics-title h1 {
+    font-size: 42px
+  }
+  .diagnostics-upload {
+    padding: 12px;
+    border-radius: 22px;
+    margin-bottom: 30px
+  }
+  .diagnostic-dropzone {
+    min-height: 240px;
+    padding: 15px
+  }
+  .diagnostic-dropzone strong {
+    font-size: 10px
+  }
+  .diagnostic-dropzone>span:not(.upload-symbol) {
+    font-size: 9px
+  }
+  .analyze-button {
+    font-size: 11px;
+    padding: 14px 23px
+  }
+  .symptom-section {
+    padding: 0
+  }
+  .symptom-heading {
+    align-items: flex-start;
+    flex-direction: column
+  }
+  .symptom-heading h2 {
+    font-size: 20px
+  }
+  .symptom-search {
+    width: 100%
+  }
+  .symptom-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 10px
+  }
+  .symptom-placeholder {
+    height: 130px
+  }
+  .symptom-card {
+    padding: 9px;
+    border-radius: 17px
+  }
+  .symptom-card strong {
+    font-size: 11px
+  }
+  .map-layout {
+    grid-template-columns: 1fr;
+    padding: 12px
+  }
+  .map-placeholder,.map-placeholder .image-placeholder {
+    min-height: 280px
+  }
+  .community-title-row {
+    align-items: flex-start;
+    flex-direction: column
+  }
+  .community-title-row .page-heading {
+    margin-bottom: 0
+  }
+  .post-card {
+    padding: 15px
+  }
+  .post-image {
+    height: 230px
+  }
+  .profile-top {
+    grid-template-columns: 80px 1fr;
+    padding: 16px;
+    gap: 14px
+  }
+  .profile-photo {
+    height: 80px
+  }
+  .profile-top h1 {
+    font-size: 18px
+  }
+  .profile-top p {
+    font-size: 9px
+  }
+  .profile-stats {
+    gap: 14px
+  }
+  .settings-icon-placeholder {
+    grid-column: 2;
+    width: 35px;
+    height: 35px
+  }
+  .profile-stats span {
+    font-size: 8px
+  }
+  .profile-stats b {
+    font-size: 14px
+  }
+  .settings-panel {
+    padding: 18px
+  }
+  .settings-panel h1 {
+    font-size: 28px
+  }
+  .setting-row {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 15px;
+    font-size: 12px
+  }
+  .auth-card {
+    padding: 28px 22px
+  }
+  .auth-card h1 {
+    font-size: 28px
+  }
+  .plant-modal {
+    padding: 10px
+  }
+  .plant-modal .page {
+    width: 100%
+  }
+}
+
+/* Precision fixes based on the Florup Figma frames */
+.site-header {
+  border: 5px solid rgba(201,184,143,.78);
+  box-shadow: 0 0 0 0 transparent;
+  outline: 0;
+}
+
+.site-header:before {
+  content: none
+}
+
+.site-footer {
+  position: relative;
+  background: transparent;
+  border: 0;
+  border-top: 24px solid #e0d2b8;
+  border-radius: 25px 25px 0 0;
+  padding: 28px 4.5% 30px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.site-footer:before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--olive);
+  border-radius: 16px 16px 0 0;
+}
+
+.footer-brand-block,.footer-column {
+  position: relative;
+  z-index: 1
+}
+
+.home-hero {
+  min-height: 930px;
+  grid-template-columns: 42% 58%;
+  padding-top: 0
+}
+
+.hero-copy {
+  padding-top: 65px
+}
+
+.hero-art-wrap {
+  height: 800px;
+  align-self: start;
+  margin-top: 80px
+}
+
+.hero-plant-button {
+  width: 315px;
+  height: 568px;
+  flex: none;
+  padding: 18px 24px
+}
+
+.hero-catalog-button {
+  bottom: -36px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 209px;
+  height: 48px;
+  padding: 0 26px;
+  border-radius: 25px
+}
+
+.hero-hint {
+  bottom: -68px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center
+}
+
+.home-about {
+  padding-top: 0
+}
+
+.about-intro {
+  display: grid;
+  grid-template-columns: minmax(280px,1fr) minmax(320px,1fr);
+  align-items: start;
+  gap: 50px;
+  margin-bottom: 55px
+}
+
+.about-intro h2 {
+  margin-top: 0;
+  line-height: 1.05
+}
+
+.about-intro p {
+  max-width: 650px;
+  margin-top: 6px
+}
+
+.team-grid {
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 28px;
+  align-items: end
+}
+
+.team-card {
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding-top: 0
+}
+
+.team-card>.image-placeholder {
+  width: 100%;
+  height: 396px;
+  border-radius: 30px 30px 0 0
+}
+
+.team-role {
+  order: 2;
+  min-height: 76px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: center;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.45;
+  padding: 12px 10px 0;
+  max-width: 100%
+}
+
+.team-name {
+  order: 1;
+  align-self: center;
+  min-height: 0;
+  width: max-content;
+  max-width: 92%;
+  background: var(--olive);
+  color: #ecdfc0;
+  padding: 10px 22px;
+  border-radius: 0 0 12px 12px;
+  display: block;
+  margin-top: -1px;
+  position: relative;
+  z-index: 1
+}
+
+.team-name strong {
+  font-size: 22px;
+  display: block;
+  white-space: nowrap
+}
+
+.team-card:nth-child(2) {
+  transform: translateY(38px)
+}
+
+.team-card:nth-child(1) {
+  transform: translateY(0)
+}
+
+.team-card:nth-child(3) {
+  transform: translateY(0)
+}
+
+.home-help {
+  padding-top: 25px
+}
+
+.care-history-empty {
+  padding: 24px 16px;
+  border-radius: 14px;
+  background: rgba(246,229,195,.6);
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7
+}
+
+.profile-top {
+  display: grid;
+  grid-template-columns: 150px minmax(0,1fr) auto;
+  align-items: start;
+  gap: 26px;
+  background: var(--card);
+  border: 2px solid rgba(80,62,47,.35);
+  border-radius: 18px;
+  padding: 28px;
+  position: relative
+}
+
+.profile-info h1 {
+  margin: 0 0 10px;
+  font-size: 28px
+}
+
+.profile-info p {
+  line-height: 1.7
+}
+
+.profile-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px
+}
+
+.profile-actions .settings-icon-placeholder {
+  flex: none
+}
+
+.profile-edit-form {
+  display: grid;
+  grid-template-columns: 1fr 2fr auto;
+  gap: 16px;
+  align-items: end;
+  margin: 18px 0;
+  padding: 22px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px
+}
+
+.profile-edit-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 11px
+}
+
+.profile-edit-form input,.profile-edit-form textarea {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--cream);
+  padding: 10px;
+  color: var(--ink);
+  font: inherit;
+  font-size: 11px
+}
+
+.profile-edit-form textarea {
+  min-height: 70px;
+  resize: vertical
+}
+
+.profile-post-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 20px;
+  margin-top: 24px
+}
+
+.profile-post-grid .post-card {
+  margin: 0
+}
+
+.profile-tabs button.active {
+  background: var(--olive);
+  color: var(--cream)
+}
+
+.care-locked {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 90px
+}
+
+@media(max-width:760px) {
+  .home-hero {
+    min-height: 0
+  }
+  .hero-art-wrap {
+    height: 520px;
+    margin-top: 20px
+  }
+  .hero-plant-button {
+    width: 230px;
+    height: 420px
+  }
+  .hero-catalog-button {
+    bottom: 0
+  }
+  .hero-hint {
+    bottom: -30px
+  }
+  .about-intro {
+    display: block
+  }
+  .team-card:nth-child(2) {
+    transform: none
+  }
+  .team-card>.image-placeholder {
+    height: 280px
+  }
+  .team-role {
+    min-height: 58px
+  }
+  .profile-top {
+    grid-template-columns: 80px minmax(0,1fr);
+    padding: 16px;
+    gap: 14px
+  }
+  .profile-actions {
+    grid-column: 1/-1;
+    justify-content: flex-end
+  }
+  .profile-edit-form {
+    grid-template-columns: 1fr
+  }
+  .profile-post-grid {
+    grid-template-columns: 1fr
+  }
+  .site-footer {
+    border-top-width: 14px
+  }
+}
+
+/* Florup Figma refinement pass */
+.home-hero {
+  grid-template-columns: 42% 58%;
+  min-height: 930px;
+  padding-top: 0;
+  overflow: visible
+}
+
+.hero-copy {
+  padding-top: 95px
+}
+
+.hero-copy h1 {
+  margin-top: 26px
+}
+
+.hero-art-wrap {
+  height: 860px;
+  margin-top: 25px;
+  overflow: visible;
+  align-self: start
+}
+
+.hero-plant-button {
+  width: min(100%,390px);
+  height: 650px;
+  flex: none;
+  padding: 0;
+  overflow: visible
+}
+
+.hero-art-bg {
+  inset: 0;
+  border-radius: 65px
+}
+
+.hero-plant-button:before {
+  inset: 35px 20px 40px
+}
+
+.hero-plant-button svg {
+  width: calc(100% + 110px);
+  height: calc(100% + 100px);
+  max-width: none;
+  transform: translate(-35px,-20px);
+  overflow: visible
+}
+
+.hero-plant-button:hover svg {
+  transform: translate(-35px,-20px) scale(1.025)
+}
+
+.hero-catalog-button {
+  bottom: 0;
+  left: 50%;
+  min-width: 209px;
+  height: 48px;
+  padding: 0 26px;
+  z-index: 4
+}
+
+.hero-hint {
+  bottom: -36px;
+  left: 50%;
+  z-index: 4
+}
+
+.home-about {
+  padding-top: 10px
+}
+
+.about-intro {
+  display: block;
+  margin-bottom: 54px
+}
+
+.about-intro h2 {
+  font-size: clamp(58px,6vw,78px);
+  line-height: 1;
+  margin-bottom: 28px;
+  letter-spacing: -2.5px
+}
+
+.about-intro p {
+  max-width: none;
+  font-size: 20px;
+  line-height: 1.6;
+  margin: 0;
+  color: var(--muted)
+}
+
+.team-grid {
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 28px;
+  align-items: end
+}
+
+.team-card {
+  overflow: visible;
+  border-radius: 28px 28px 18px 18px;
+  background: var(--card);
+  box-shadow: 0 7px 10px rgba(80,62,47,.18);
+  position: relative;
+  padding-top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch
+}
+
+.team-card>.image-placeholder {
+  width: 100%;
+  height: 365px;
+  min-height: 0;
+  border-radius: 28px 28px 0 0;
+  background: linear-gradient(135deg,#f6e5c3,#e8d9bc);
+  overflow: visible
+}
+
+.team-name {
+  order: 2;
+  align-self: stretch;
+  width: 100%;
+  max-width: none;
+  min-height: 68px;
+  border-radius: 0 0 18px 18px;
+  background: var(--olive);
+  color: #ecdfc0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 12px 14px;
+  position: relative;
+  z-index: 2
+}
+
+.team-name strong {
+  font-size: 24px;
+  display: block;
+  white-space: nowrap
+}
+
+.team-role {
+  order: 3;
+  min-height: 84px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: center;
+  color: var(--ink);
+  font-size: 18px;
+  line-height: 1.4;
+  padding: 14px 12px 0;
+  max-width: 100%
+}
+
+.team-card.team-евсей {
+  transform: translateY(-36px)
+}
+
+.team-card.team-евсей .team-role {
+  order: 0;
+  position: absolute;
+  top: -78px;
+  left: 0;
+  right: 0;
+  min-height: 0;
+  padding: 0 10px;
+  font-size: 20px
+}
+
+.team-card.team-евсей .image-placeholder {
+  margin-top: 0
+}
+
+.team-card.team-лизавета,.team-card.team-анфиса {
+  transform: none
+}
+
+.home-help {
+  padding-top: 25px
+}
+
+.help-heading {
+  margin: 0 0 65px;
+  text-align: center
+}
+
+.help-heading h2 {
+  font-size: clamp(48px,5.5vw,76px);
+  margin: 22px 0 24px
+}
+
+.help-heading p {
+  font-size: 20px;
+  line-height: 1.65;
+  margin: 0 auto;
+  max-width: 1100px
+}
+
+.home-catalog-strip,.home-page .plant-grid {
+  display: none!important
+}
+
+.site-footer {
+  margin: 48px 0 0;
+  position: relative;
+  background: transparent;
+  border: 5px solid rgba(201,184,143,.78);
+  border-bottom: 0;
+  border-radius: 26px 26px 0 0;
+  padding: 28px 4.5% 30px;
+  overflow: hidden;
+  isolation: isolate;
+  min-height: 274px;
+  grid-template-columns: 1.45fr 1fr 1.15fr .65fr;
+  gap: 34px
+}
+
+.site-footer:before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--olive);
+  border-radius: 19px 19px 0 0
+}
+
+.footer-brand-block,.footer-column {
+  position: relative;
+  z-index: 1
+}
+
+.footer-logo-row strong {
+  font-size: 38px
+}
+
+.footer-brand-block p {
+  font-size: 14px;
+  line-height: 1.65;
+  margin-top: 20px
+}
+
+.footer-column {
+  gap: 17px
+}
+
+.footer-column h3 {
+  font-size: 18px
+}
+
+.footer-column button,.footer-column a,.footer-column span {
+  font-size: 12px;
+  line-height: 1.65
+}
+
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(35,30,23,.58);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+  backdrop-filter: blur(1.5px)
+}
+
+.auth-overlay .auth-page {
+  min-height: 0;
+  width: 100%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center
+}
+
+.auth-overlay .auth-card {
+  position: relative;
+  max-height: calc(100vh - 48px);
+  overflow: auto
+}
+
+.auth-overlay-close {
+  position: fixed;
+  top: 24px;
+  right: 28px;
+  z-index: 102;
+  width: 42px;
+  height: 42px;
+  border: 2px solid rgba(201,184,143,.8);
+  border-radius: 50%;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer
+}
+
+.setting-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between
+}
+
+.setting-row>div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px
+}
+
+.setting-row>div strong {
+  font-size: 16px
+}
+
+.setting-row>div span {
+  font-size: 11px;
+  color: var(--muted)
+}
+
+.toggle-switch {
+  width: 54px;
+  height: 30px;
+  border-radius: 20px;
+  border: 1px solid #9d9270;
+  background: #d4c8ad;
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+  flex: none
+}
+
+.toggle-switch span {
+  height: 22px;
+  width: 22px;
+  border-radius: 50%;
+  background: #fff0d3;
+  box-shadow: 0 1px 3px #0002;
+  transition: transform .18s
+}
+
+.toggle-switch.on {
+  background: var(--olive);
+  justify-content: flex-end
+}
+
+.setting-chevron {
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 25px;
+  cursor: pointer
+}
+
+.logout-setting {
+  width: 100%;
+  margin-top: 0
+}
+
+.logout-setting>span {
+  font-size: 25px;
+  color: var(--ink)
+}
+
+.diagnostics-empty {
+  margin: 30px auto 0
+}
+
+.dark-demo {
+  filter: brightness(.82) saturate(.9)
+}
+
+@media(max-width:760px) {
+  .home-hero {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding-top: 0
+  }
+  .hero-copy {
+    padding: 35px 4px 0
+  }
+  .hero-art-wrap {
+    height: 590px;
+    margin-top: 20px;
+    align-self: center;
+    width: 100%;
+    max-width: 440px
+  }
+  .hero-plant-button {
+    width: 250px;
+    height: 440px;
+    padding: 0
+  }
+  .hero-plant-button svg {
+    width: calc(100% + 70px);
+    height: calc(100% + 65px);
+    transform: translate(-22px,-12px)
+  }
+  .hero-plant-button:hover svg {
+    transform: translate(-22px,-12px) scale(1.02)
+  }
+  .hero-catalog-button {
+    bottom: 18px
+  }
+  .hero-hint {
+    bottom: -8px
+  }
+  .about-intro h2 {
+    font-size: 54px;
+    margin-bottom: 18px
+  }
+  .about-intro p {
+    font-size: 14px
+  }
+  .team-grid {
+    grid-template-columns: 1fr;
+    gap: 55px
+  }
+  .team-card.team-евсей {
+    transform: none;
+    margin-top: 40px
+  }
+  .team-card.team-евсей .team-role {
+    top: -44px;
+    font-size: 14px
+  }
+  .team-card>.image-placeholder {
+    height: 280px
+  }
+  .team-role {
+    font-size: 14px;
+    min-height: 58px
+  }
+  .help-heading p {
+    font-size: 14px
+  }
+  .site-footer {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    padding: 24px 20px;
+    margin-top: 25px;
+    min-height: 0
+  }
+  .footer-logo-row strong {
+    font-size: 26px
+  }
+  .footer-brand-block p {
+    font-size: 11px
+  }
+  .footer-column h3 {
+    font-size: 13px
+  }
+  .footer-column button,.footer-column a,.footer-column span {
+    font-size: 10px
+  }
+  .auth-overlay {
+    padding: 18px
+  }
+  .auth-overlay-close {
+    top: 10px;
+    right: 10px
+  }
+}
+
+/* Final layout details from the user's Figma review */
+.profile-top {
+  grid-template-columns: 220px minmax(0,1fr) auto;
+  gap: 30px;
+  padding: 32px;
+  align-items: center
+}
+
+.profile-photo {
+  width: 200px;
+  height: 200px;
+  min-height: 0;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center
+}
+
+.profile-photo .placeholder-circle {
+  width: 72px;
+  height: 72px;
+  flex: none
+}
+
+.profile-photo small {
+  font-size: 10px
+}
+
+.profile-info h1 {
+  font-size: 36px
+}
+
+.profile-info>p {
+  font-size: 15px;
+  line-height: 1.7
+}
+
+.profile-stats span {
+  font-size: 13px
+}
+
+.profile-stats b {
+  font-size: 23px
+}
+
+.profile-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end
+}
+
+.settings-icon-placeholder {
+  width: 50px;
+  height: 50px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #503e2f;
+  font-size: 35px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center
+}
+
+.profile-tabs button {
+  font-size: 16px;
+  padding: 12px 4px
+}
+
+.profile-edit-panel {
+  max-width: 900px;
+  margin: 28px auto;
+  padding: 35px;
+  background: var(--cream);
+  border: 2px solid #a9966f;
+  border-radius: 20px;
+  box-shadow: 0 5px 10px #503e2f18
+}
+
+.profile-edit-panel h1 {
+  font-size: 30px;
+  margin: 0 0 22px
+}
+
+.profile-edit-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 1px dashed #b7a875;
+  background: var(--card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--muted);
+  font-size: 10px;
+  margin: 0 auto 25px
+}
+
+.profile-edit-panel label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  margin: 18px 0
+}
+
+.profile-edit-panel input,.profile-edit-panel textarea {
+  border: 1px solid #c8b98e;
+  border-radius: 10px;
+  background: var(--card);
+  padding: 13px;
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px
+}
+
+.profile-edit-panel textarea {
+  min-height: 130px;
+  resize: vertical
+}
+
+.profile-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px
+}
+
+.soft-button {
+  border: 1px solid #b9a880;
+  border-radius: 24px;
+  background: transparent;
+  color: var(--ink);
+  padding: 12px 22px
+}
+
+@media(max-width:760px) {
+  .profile-top {
+    grid-template-columns: 90px minmax(0,1fr);
+    gap: 14px;
+    padding: 16px
+  }
+  .profile-photo {
+    width: 90px;
+    height: 90px
+  }
+  .profile-info h1 {
+    font-size: 21px
+  }
+  .profile-info>p {
+    font-size: 10px
+  }
+  .profile-actions {
+    grid-column: 1/-1
+  }
+  .profile-edit-panel {
+    padding: 20px
+  }
+  .profile-edit-panel h1 {
+    font-size: 24px
+  }
+}
+
+/* Refinement pass: clearer image placeholders, typography, framing and theme switch */
+:root.theme-dark {
+  color-scheme: dark;
+  --ink: #f1e6d1;
+  --olive: #343d2b;
+  --cream: #292b25;
+  --card: #3b3a30;
+  --tan: #65513f;
+  --pale: #d4c5a5;
+  --line: #68644e;
+  --muted: rgba(241,230,209,.72);
+  background: var(--cream);
+  color: var(--ink)
+}
+
+:root.theme-dark body {
+  background: var(--cream);
+  color: var(--ink)
+}
+
+:root.theme-dark .site-header,:root.theme-dark .site-footer:before {
+  background: var(--olive)
+}
+
+:root.theme-dark .hero-art-bg,:root.theme-dark .image-placeholder,:root.theme-dark .step-card,:root.theme-dark .team-card,:root.theme-dark .settings-panel,:root.theme-dark .page-panel {
+  background: var(--card)
+}
+
+:root.theme-dark .hero-catalog-button,:root.theme-dark .olive-button,:root.theme-dark .team-name {
+  background: #596345;
+  color: #f4e8cf
+}
+
+:root.theme-dark .site-footer {
+  border-color: rgba(241,230,209,.58)
+}
+
+.site-header {
+  border-width: 7px;
+  outline: 2px solid rgba(201,184,143,.34);
+  outline-offset: 3px
+}
+
+.site-footer {
+  border: 7px solid rgba(201,184,143,.8);
+  border-bottom: 0;
+  border-radius: 30px 30px 0 0
+}
+
+.site-footer:before {
+  border-radius: 21px 21px 0 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0
+}
+
+.footer-brand-block p {
+  font-size: 16px;
+  line-height: 1.7;
+  max-width: 470px
+}
+
+.footer-column h3 {
+  font-size: 20px
+}
+
+.footer-column button,.footer-column a,.footer-column span {
+  font-size: 14px;
+  line-height: 1.7
+}
+
+.footer-column {
+  gap: 18px
+}
+
+.home-hero {
+  min-height: 930px
+}
+
+.hero-art-wrap {
+  overflow: visible
+}
+
+.hero-plant-button.hero-image-placeholder {
+  border: 0;
+  background: transparent;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  color: var(--tan);
+  padding: 35px;
+  cursor: pointer
+}
+
+.hero-plant-button.hero-image-placeholder .hero-art-bg {
+  inset: 0;
+  border-radius: 65px
+}
+
+.hero-plant-button.hero-image-placeholder:before {
+  content: none
+}
+
+.placeholder-image-mark {
+  position: relative;
+  z-index: 2;
+  width: 82px;
+  height: 82px;
+  border: 2px solid rgba(172,142,108,.7);
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  font-size: 56px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--tan);
+  background: rgba(255,240,211,.25)
+}
+
+.placeholder-image-label {
+  position: relative;
+  z-index: 2;
+  max-width: 240px;
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: center;
+  color: var(--muted)
+}
+
+.hero-icon-placeholder {
+  position: absolute;
+  z-index: 4;
+  width: 76px;
+  height: 76px;
+  border: 2px solid rgba(172,142,108,.65);
+  border-radius: 20px;
+  background: #f6e5c3;
+  box-shadow: 0 4px 12px rgba(80,62,47,.08)
+}
+
+.icon-one {
+  right: -7%;
+  top: 5%
+}
+
+.icon-two {
+  right: -15%;
+  top: 35%
+}
+
+.icon-three {
+  right: -5%;
+  bottom: 12%
+}
+
+.icon-four {
+  left: -2%;
+  bottom: 17%
+}
+
+.icon-five {
+  left: -13%;
+  top: 47%
+}
+
+.hero-catalog-button {
+  bottom: 4px
+}
+
+.hero-hint {
+  bottom: -33px
+}
+
+.fact-card {
+  border-radius: 25px;
+  overflow: hidden;
+  padding: 22px 25px 0;
+  width: min(100%,468px);
+  box-shadow: none
+}
+
+.fact-card strong {
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 22px
+}
+
+.fact-card p {
+  font-size: 16px;
+  line-height: 1.75;
+  border-radius: 0;
+  padding: 23px 20px;
+  margin: 0 -25px;
+  background: #e3c8aa
+}
+
+.about-intro h2 {
+  font-size: clamp(52px,5.4vw,72px)
+}
+
+.team-grid {
+  gap: 30px
+}
+
+.team-card {
+  border-radius: 30px 30px 20px 20px;
+  box-shadow: 0 7px 12px rgba(80,62,47,.17);
+  padding-top: 0
+}
+
+.team-card>.image-placeholder {
+  height: 340px;
+  min-height: 0;
+  border-radius: 30px 30px 0 0;
+  box-shadow: none;
+  background: linear-gradient(135deg,#f6e5c3,#e3d2b1)
+}
+
+.team-name {
+  min-height: 74px;
+  padding: 12px 10px;
+  border-radius: 0 0 18px 18px
+}
+
+.team-name strong {
+  font-size: clamp(24px,2.5vw,34px)
+}
+
+.team-role {
+  font-size: clamp(18px,1.8vw,25px);
+  line-height: 1.45;
+  padding: 14px 12px;
+  min-height: 100px
+}
+
+.team-card.team-евсей .team-role {
+  font-size: clamp(20px,2vw,28px);
+  top: -94px
+}
+
+.help-heading h2 {
+  font-size: clamp(48px,5.4vw,74px)
+}
+
+.help-heading p {
+  font-size: 20px;
+  line-height: 1.7
+}
+
+.step-card {
+  min-height: 436px;
+  padding: 70px 44px 40px
+}
+
+.step-card h3 {
+  font-size: 32px;
+  line-height: 1.35;
+  margin-bottom: 30px
+}
+
+.step-card p {
+  font-size: 20px;
+  line-height: 1.7;
+  max-width: 100%
+}
+
+.step-card>button {
+  font-size: 32px
+}
+
+.catalog-page .db-empty {
+  margin-top: 54px
+}
+
+.catalog-page .page-heading {
+  margin-bottom: 44px
+}
+
+.profile-edit-link,.profile-actions .edit-button {
+  background: #503e2f!important;
+  color: #f6e5c3!important;
+  border-color: #503e2f!important
+}
+
+.profile-edit-link:hover,.profile-actions .edit-button:hover {
+  background: #3f3025!important
+}
+
+.settings-panel {
+  gap: 0
+}
+
+.settings-panel .setting-row {
+  margin: 0;
+  border-bottom: 1px solid rgba(172,142,108,.28);
+  border-radius: 0;
+  padding: 24px 18px
+}
+
+.settings-panel .setting-row:last-child {
+  border-bottom: 0
+}
+
+.settings-panel .setting-row>div {
+  gap: 6px
+}
+
+.settings-panel .setting-row>div strong {
+  font-size: 17px
+}
+
+.settings-panel .setting-row>div span {
+  font-size: 12px
+}
+
+@media(max-width:760px) {
+  .site-header {
+    border-width: 5px;
+    outline-width: 1px
+  }
+  .site-footer {
+    border-width: 5px;
+    border-bottom: 0
+  }
+  .footer-brand-block p {
+    font-size: 12px
+  }
+  .footer-column h3 {
+    font-size: 14px
+  }
+  .footer-column button,.footer-column a,.footer-column span {
+    font-size: 11px
+  }
+  .hero-plant-button.hero-image-placeholder {
+    width: 250px;
+    height: 440px
+  }
+  .hero-icon-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px
+  }
+  .icon-two {
+    right: 0
+  }
+  .icon-five {
+    left: 0
+  }
+  .hero-catalog-button {
+    bottom: 18px
+  }
+  .hero-hint {
+    bottom: -8px
+  }
+  .fact-card {
+    width: 100%
+  }
+  .fact-card p {
+    font-size: 13px
+  }
+  .team-card>.image-placeholder {
+    height: 280px
+  }
+  .team-name strong {
+    font-size: 26px
+  }
+  .team-role,.team-card.team-евсей .team-role {
+    font-size: 17px
+  }
+  .step-card {
+    min-height: 300px;
+    padding: 48px 25px 45px
+  }
+  .step-card h3 {
+    font-size: 24px
+  }
+  .step-card p {
+    font-size: 15px
+  }
+  .settings-panel .setting-row {
+    padding: 18px 12px
+  }
+}
+
+/* Финальная корректировка по замечаниям к макету */
+/* Иконки на первом экране не должны заходить на текст слева. */
+.home-hero {
+  grid-template-columns: minmax(0,42%) minmax(0,58%)
+}
+
+.hero-art-wrap {
+  min-width: 0;
+  isolation: isolate
+}
+
+.hero-icon-placeholder {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  z-index: 1;
+  background: var(--card)
+}
+
+.icon-one {
+  right: 4%;
+  top: 5%
+}
+
+.icon-two {
+  right: 0;
+  top: 34%
+}
+
+.icon-three {
+  right: 5%;
+  bottom: 14%
+}
+
+.icon-four {
+  left: 4%;
+  bottom: 15%
+}
+
+.icon-five {
+  left: 1%;
+  top: 48%
+}
+
+.hero-plant-button.hero-image-placeholder {
+  z-index: 2
+}
+
+@media(max-width:1100px) {
+  .hero-icon-placeholder {
+    width: 52px;
+    height: 52px
+  }
+  .icon-five {
+    left: 0
+  }
+  .icon-four {
+    left: 1%
+  }
+}
+
+@media(max-width:760px) {
+  .hero-icon-placeholder {
+    width: 46px;
+    height: 46px
+  }
+  .icon-one {
+    right: 1%;
+    top: 4%
+  }
+  .icon-two {
+    right: 0;
+    top: 31%
+  }
+  .icon-three {
+    right: 1%;
+    bottom: 14%
+  }
+  .icon-four {
+    left: 0;
+    bottom: 15%
+  }
+  .icon-five {
+    left: 0;
+    top: 47%
+  }
+}
+
+/* Команда: больше места под будущие фотографии, прямоугольные карточки и роли без плашек. */
+.team-grid {
+  gap: 34px;
+  align-items: start
+}
+
+.team-card {
+  overflow: visible;
+  border-radius: 25px;
+  background: transparent;
+  box-shadow: none;
+  position: relative;
+  padding-top: 0
+}
+
+.team-card>.image-placeholder {
+  height: 390px;
+  min-height: 390px;
+  width: calc(100% + 24px);
+  margin-left: -12px;
+  margin-bottom: 0;
+  border-radius: 24px;
+  background: var(--card);
+  box-shadow: 0 7px 18px rgba(80,62,47,.12);
+  overflow: hidden
+}
+
+.team-card .team-name {
+  width: 100%;
+  min-height: 88px;
+  margin-top: 14px;
+  border-radius: 0;
+  background: var(--olive);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 12px
+}
+
+.team-name strong {
+  font-size: clamp(26px,2.5vw,36px);
+  line-height: 1.2
+}
+
+.team-card .team-role {
+  position: static;
+  top: auto;
+  left: auto;
+  right: auto;
+  min-height: 0;
+  height: auto;
+  padding: 18px 8px 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  color: var(--ink);
+  font-size: clamp(18px,1.8vw,25px);
+  line-height: 1.4;
+  text-align: center
+}
+
+.team-card.team-евсей .team-role {
+  position: static;
+  top: auto;
+  font-size: clamp(20px,2vw,28px)
+}
+
+@media(max-width:760px) {
+  .team-card>.image-placeholder {
+    height: 300px;
+    min-height: 300px;
+    width: 100%;
+    margin-left: 0
+  }
+  .team-card .team-name {
+    margin-top: 12px;
+    min-height: 70px
+  }
+  .team-card .team-role,.team-card.team-евсей .team-role {
+    font-size: 18px;
+    padding-top: 14px
+  }
+}
+
+/* Сообщество: вместо готовых пиктограмм — пустые места для будущих иконок. */
+.post-like,.post-comment,.post-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 62px;
+  color: var(--ink);
+  font-size: 14px
+}
+
+.action-icon-placeholder {
+  display: inline-block;
+  width: 26px;
+  height: 24px;
+  border: 1.5px solid var(--tan);
+  border-radius: 7px;
+  background: rgba(172,142,108,.12);
+  flex: 0 0 26px
+}
+
+.comment-icon-placeholder {
+  width: 27px;
+  height: 24px;
+  border-radius: 7px 7px 7px 3px
+}
+
+/* Профиль: убрать недостающую иконку настроек, выделить описание и увеличить аватар. */
+.profile-page {
+  width: min(1180px,calc(100% - 64px));
+  padding-top: 45px;
+  padding-bottom: 70px
+}
+
+.profile-top {
+  grid-template-columns: 260px minmax(0,1fr) auto;
+  gap: 36px;
+  padding: 42px;
+  min-height: 330px;
+  border-radius: 32px
+}
+
+.profile-photo {
+  width: 260px;
+  height: 260px;
+  min-height: 260px;
+  border-radius: 50%;
+  overflow: hidden
+}
+
+.profile-info h1 {
+  font-size: 38px;
+  margin-bottom: 14px
+}
+
+.profile-info .profile-email {
+  font-size: 15px;
+  margin: 0 0 18px
+}
+
+.profile-info .profile-bio {
+  font-size: 16px;
+  line-height: 1.7;
+  padding: 16px 20px;
+  border: 1.5px solid var(--tan);
+  border-radius: 16px;
+  margin: 0;
+  max-width: 740px;
+  color: var(--ink)
+}
+
+.profile-stats {
+  gap: 38px;
+  margin-top: 26px
+}
+
+.profile-stats span {
+  font-size: 13px
+}
+
+.profile-stats b {
+  font-size: 24px
+}
+
+.profile-actions {
+  align-self: start;
+  display: flex;
+  justify-content: flex-end
+}
+
+.profile-actions .profile-edit-button {
+  background: #503e2f!important;
+  color: #fff0d3!important;
+  border-radius: 28px;
+  padding: 15px 25px;
+  font-size: 14px
+}
+
+.profile-actions .profile-edit-button:hover {
+  background: #3d2e22!important
+}
+
+.profile-tabs {
+  gap: 14px;
+  margin: 32px 0 24px;
+  border-bottom: 0;
+  align-items: center
+}
+
+.profile-tabs button {
+  padding: 14px 24px;
+  border-radius: 18px;
+  font-size: 15px;
+  border: 1px solid transparent;
+  transition: background .15s
+}
+
+.profile-tabs button.active {
+  background: var(--card);
+  border: 1px solid rgba(172,142,108,.35);
+  border-radius: 18px;
+  color: var(--ink);
+  box-shadow: 0 3px 10px rgba(80,62,47,.07)
+}
+
+.profile-page .db-empty {
+  margin-top: 26px;
+  border-radius: 28px;
+  padding: 55px 35px
+}
+
+@media(max-width:900px) {
+  .profile-page {
+    width: calc(100% - 34px)
+  }
+  .profile-top {
+    grid-template-columns: 180px minmax(0,1fr);
+    padding: 24px;
+    gap: 22px
+  }
+  .profile-photo {
+    width: 180px;
+    height: 180px;
+    min-height: 180px
+  }
+  .profile-actions {
+    grid-column: 2;
+    justify-content: flex-start
+  }
+  .profile-info h1 {
+    font-size: 30px
+  }
+}
+
+@media(max-width:600px) {
+  .profile-top {
+    grid-template-columns: 100px minmax(0,1fr);
+    padding: 16px;
+    gap: 14px
+  }
+  .profile-photo {
+    width: 100px;
+    height: 100px;
+    min-height: 100px
+  }
+  .profile-info h1 {
+    font-size: 23px
+  }
+  .profile-info .profile-bio {
+    font-size: 12px;
+    padding: 10px
+  }
+  .profile-stats {
+    gap: 12px;
+    flex-wrap: wrap
+  }
+  .profile-actions {
+    grid-column: 1/-1
+  }
+  .profile-tabs button {
+    padding: 11px 15px;
+    font-size: 12px
+  }
+}
+
+/* Редактирование профиля: рабочая локальная кнопка выбора изображения. */
+.profile-edit-avatar-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer
+}
+
+.profile-edit-avatar-upload input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none
+}
+
+.profile-edit-avatar {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  gap: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.avatar-upload-plus {
+  font-size: 40px;
+  line-height: 1;
+  color: var(--tan)
+}
+
+.choose-photo-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--tan);
+  border-radius: 22px;
+  padding: 10px 18px;
+  color: var(--ink);
+  font-size: 13px;
+  background: var(--cream)
+}
+
+.profile-edit-avatar-upload:hover .choose-photo-button {
+  background: var(--card)
+}
+
+/* Настройки: мягкие края, строки без разрывов, выход по центру. */
+.settings-panel {
+  overflow: hidden;
+  border-radius: 30px;
+  border: 1px solid rgba(172,142,108,.45);
+  padding: 34px
+}
+
+.settings-panel .setting-row {
+  border: 0!important;
+  border-bottom: 1px solid rgba(172,142,108,.24)!important;
+  border-radius: 0!important;
+  margin: 0!important;
+  background: transparent!important;
+  padding: 25px 12px!important;
+  color: var(--ink)!important
+}
+
+.settings-panel .setting-row:last-child {
+  border-bottom: 0!important
+}
+
+.settings-panel .logout-setting {
+  justify-content: center;
+  text-align: center;
+  border-radius: 0 0 22px 22px!important
+}
+
+.settings-panel .logout-setting>div {
+  align-items: center;
+  width: 100%
+}
+
+.settings-panel .logout-setting .setting-chevron {
+  display: none
+}
+
+.settings-panel .setting-row>div strong {
+  color: var(--ink)!important
+}
+
+.settings-panel .setting-row>div span {
+  color: var(--muted)!important
+}
+
+.settings-panel .setting-chevron {
+  color: var(--ink)!important
+}
+
+/* Тёмная тема: переопределить оставшиеся фиксированные коричневые надписи и кнопки. */
+:root.theme-dark .step-card p,:root.theme-dark .help-heading p,:root.theme-dark .hero-description,:root.theme-dark .about-intro p,:root.theme-dark .team-role,:root.theme-dark .profile-top p,:root.theme-dark .profile-stats span,:root.theme-dark .post-card,:root.theme-dark .post-card>p,:root.theme-dark .post-actions button,:root.theme-dark .post-like,:root.theme-dark .post-comment {
+  color: var(--ink)!important
+}
+
+:root.theme-dark .fact-card p {
+  background: #3d3b30;
+  color: var(--ink)!important
+}
+
+:root.theme-dark .settings-panel .setting-row,:root.theme-dark .settings-panel .setting-row strong,:root.theme-dark .settings-panel .setting-row span,:root.theme-dark .settings-panel .setting-chevron {
+  color: var(--ink)!important
+}
+
+:root.theme-dark .settings-panel .setting-row>div span {
+  color: var(--muted)!important
+}
+
+:root.theme-dark .setting-row {
+  background: transparent!important
+}
+
+:root.theme-dark .profile-info .profile-bio {
+  border-color: var(--tan);
+  color: var(--ink)!important
+}
+
+:root.theme-dark .choose-photo-button {
+  color: var(--ink);
+  background: var(--card)
+}
+
+:root.theme-dark .post-card {
+  background: var(--card)
+}
+
+:root.theme-dark .action-icon-placeholder {
+  border-color: var(--tan);
+  background: rgba(212,197,165,.08)
+}
+
+/* ============================================================
+   АКТУАЛЬНЫЕ ПРАВКИ ПО МАКЕТУ — 13.10.2026
+   ============================================================ */
+/* Главная: круглые пустые места для декоративных иконок без рамки. */
+.hero-icon-placeholder {
+  width: 64px;
+  height: 64px;
+  border: 0 !important;
+  outline: 0;
+  border-radius: 50% !important;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(80, 62, 47, .08);
+}
+
+.hero-icon-placeholder::before, .hero-icon-placeholder::after {
+  content: none !important;
+}
+
+/* Карточка «А вы знали»: заголовок слева и более заметный, как в макете. */
+.fact-card {
+  width: min(100%, 468px);
+  margin-top: 58px;
+  padding: 24px 26px 0;
+  border-radius: 24px;
+  background: var(--tan);
+  overflow: hidden;
+}
+
+.fact-card strong {
+  display: block;
+  width: 100%;
+  margin: 0 0 20px;
+  text-align: left !important;
+  font-size: clamp(25px, 2vw, 31px);
+  line-height: 1.25;
+}
+
+.fact-card p {
+  margin: 0 -26px;
+  padding: 22px 26px 25px;
+  border-radius: 0;
+  font-size: 15px;
+  line-height: 1.75;
+  background: rgba(246, 229, 195, .38);
+}
+
+/* О нас: портретные блоки 9:16, имена — мягкие плашки, роли без плашек. */
+.team-grid {
+  align-items: start;
+  gap: clamp(22px, 3vw, 42px);
+}
+
+.team-card {
+  min-width: 0;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.team-card > .image-placeholder {
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 9 / 16;
+  max-height: 540px;
+  border-radius: 26px 26px 0 0;
+  background: var(--card);
+  box-shadow: 0 7px 18px rgba(80, 62, 47, .12);
+  overflow: hidden;
+}
+
+.team-card > .image-placeholder .placeholder-circle {
+  width: 84px;
+  height: 84px;
+}
+
+.team-card > .image-placeholder small {
+  font-size: 13px;
+}
+
+.team-card .team-name {
+  order: 2;
+  width: 100%;
+  max-width: none;
+  min-height: 70px;
+  margin: 0;
+  padding: 14px 12px;
+  border-radius: 0 0 20px 20px;
+  background: var(--olive);
+  color: #ecdfc0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+}
+
+.team-card .team-name strong {
+  font-size: clamp(23px, 2.1vw, 31px);
+  white-space: normal;
+}
+
+.team-card .team-role {
+  order: 3;
+  position: static !important;
+  inset: auto !important;
+  min-height: 86px;
+  height: auto;
+  margin: 0;
+  padding: 18px 8px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--ink);
+  font-size: clamp(16px, 1.55vw, 22px);
+  line-height: 1.4;
+  text-align: center;
+  display: block;
+}
+
+.team-card.team-евсей {
+  transform: translateY(42px);
+}
+
+.team-card.team-евсей .team-role {
+  order: 0;
+  position: static !important;
+  margin: 0 0 18px;
+  padding: 0 8px;
+  min-height: 0;
+  font-size: clamp(17px, 1.65vw, 23px);
+  line-height: 1.4;
+}
+
+.team-card.team-евсей > .image-placeholder {
+  order: 1;
+}
+
+.team-card.team-евсей .team-name {
+  order: 2;
+}
+
+.team-card.team-лизавета, .team-card.team-анфиса {
+  transform: none;
+}
+
+/* Карта: место под поисковую иконку, чтобы позже заменить ассетом. */
+.search-icon-placeholder {
+  display: inline-block;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 0;
+}
+
+.field-search {
+  align-items: center;
+}
+
+/* Профиль: доступ к настройкам, размеры заглушек и вкладки как в макете ухода. */
+.profile-actions {
+  align-self: start;
+  gap: 16px;
+}
+
+.profile-settings-placeholder {
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+  border: 1.5px dashed var(--tan);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.profile-photo {
+  width: 240px;
+  height: 240px;
+  min-height: 240px;
+}
+
+.profile-photo .placeholder-circle {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+}
+
+.profile-photo small {
+  display: none;
+}
+
+.profile-top {
+  grid-template-columns: 240px minmax(0, 1fr) auto;
+  min-height: 340px;
+  gap: 34px;
+  padding: 38px;
+}
+
+.profile-stats {
+  display: flex;
+  gap: clamp(24px, 4vw, 52px);
+  align-items: flex-start;
+}
+
+.profile-stats span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 7px;
+}
+
+.profile-stats b {
+  order: 0;
+  color: var(--tan);
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.profile-tabs {
+  display: flex;
+  gap: 40px;
+  width: 100%;
+  margin: 38px 0 0;
+  padding: 0 28px;
+  border-bottom: 1px solid var(--line);
+  align-items: stretch;
+}
+
+.profile-tabs button {
+  position: relative;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  color: var(--ink);
+  padding: 17px 2px 19px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.profile-tabs button.active {
+  color: var(--olive) !important;
+}
+
+.profile-tabs button.active::after {
+  content: "";
+  position: absolute;
+  height: 6px;
+  border-radius: 8px;
+  background: var(--olive);
+  bottom: -1px;
+  left: 0;
+  right: 0;
+}
+
+.profile-page .db-empty {
+  max-width: none;
+  width: 100%;
+  margin-top: 0;
+  border-radius: 0 0 24px 24px;
+}
+
+.profile-posts-empty {
+  padding: 70px 30px !important;
+}
+
+.profile-posts-empty .sad-face-placeholder {
+  display: block;
+  font-size: 48px;
+  line-height: 1;
+  color: var(--tan);
+  margin-bottom: 22px;
+}
+
+.profile-posts-empty p {
+  max-width: 800px;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.profile-posts-empty .olive-button {
+  display: none !important;
+}
+
+/* Тестовая карточка каталога — только интерфейс, не запись в базе. */
+.catalog-preview-grid {
+  align-items: start;
+}
+
+.catalog-preview-card {
+  max-width: 340px;
+  min-height: 100%;
+}
+
+.catalog-preview-card .catalog-test-plant-icon {
+  gap: 8px;
+}
+
+.test-plant-silhouette {
+  font-size: 62px;
+  line-height: 1;
+  color: var(--olive);
+}
+
+.catalog-preview-note {
+  align-self: center;
+  max-width: 440px;
+  padding: 24px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+/* Тёмная тема: все тексты профиля/плиток и настроек остаются читаемыми. */
+:root.theme-dark .fact-card strong, :root.theme-dark .fact-card p, :root.theme-dark .team-card .team-role, :root.theme-dark .profile-tabs button, :root.theme-dark .profile-posts-empty p, :root.theme-dark .catalog-preview-note {
+  color: var(--ink) !important;
+}
+
+:root.theme-dark .profile-tabs button.active {
+  color: #c7d29c !important;
+}
+
+:root.theme-dark .profile-settings-placeholder {
+  border-color: var(--tan);
+}
+
+/* 16. Адаптация для мобильных экранов */
+@media (max-width: 760px) {
+  .fact-card {
+    margin-top: 28px;
+  }
+  .team-card > .image-placeholder {
+    aspect-ratio: 9 / 16;
+    max-height: 540px;
+  }
+  .team-card.team-евсей {
+    transform: none;
+    margin-top: 28px;
+  }
+  .team-card.team-евсей .team-role {
+    margin-bottom: 14px;
+  }
+  .profile-top {
+    grid-template-columns: 120px minmax(0, 1fr);
+    padding: 20px;
+    gap: 18px;
+  }
+  .profile-photo {
+    width: 120px;
+    height: 120px;
+    min-height: 120px;
+  }
+  .profile-photo .placeholder-circle {
+    width: 62px;
+    height: 62px;
+  }
+  .profile-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+  .profile-tabs {
+    gap: 24px;
+    padding: 0 12px;
+  }
+  .profile-tabs button {
+    font-size: 13px;
+  }
+  .catalog-preview-grid {
+    grid-template-columns: 1fr;
+  }
+  .catalog-preview-note {
+    padding: 8px 0;
+  }
+}
+
+/* ===== Корректировки по последнему просмотру макета ===== */
+/* Главная: круглые места под декоративные иконки чуть крупнее. */
+.hero-icon-placeholder {
+  width: 78px;
+  height: 78px;
+}
+
+/* О нас: команда немного левее, роли крупнее; Евсей — роль над именем,
+   а сама карточка начинается чуть ниже соседних. */
+.team-grid {
+  transform: translateX(-10px);
+}
+
+.team-card .team-role {
+  font-size: clamp(18px, 1.45vw, 25px);
+  line-height: 1.35;
+  padding: 0 6px;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.team-card.team-евсей {
+  margin-top: 34px;
+}
+
+.team-card.team-евсей .team-role {
+  order: 1;
+  margin: 0 0 16px;
+}
+
+.team-card.team-евсей .team-name {
+  order: 2;
+}
+
+.team-card:not(.team-евсей) .team-name {
+  order: 1;
+}
+
+.team-card:not(.team-евсей) .team-role {
+  order: 2;
+  margin-top: 16px;
+}
+
+.team-card .team-name {
+  border-radius: 0 0 18px 18px !important;
+}
+
+:root.theme-dark .team-card, :root.theme-dark .team-card .team-role, :root.theme-dark .team-card .team-name, :root.theme-dark .team-card .image-placeholder {
+  background-image: none !important;
+}
+
+:root.theme-dark .team-card .team-role {
+  color: var(--ink) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Подробная карточка растения — отдельная страница, требования листаются. */
+.plant-detail-page .care-requirements {
+  display: flex;
+  gap: 22px;
+  overflow-x: auto;
+  padding: 8px 4px 22px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+}
+
+.plant-detail-page .care-requirements article {
+  flex: 0 0 min(390px, 78vw);
+  min-height: 235px;
+  padding: 30px;
+  border-radius: 28px;
+  scroll-snap-align: start;
+}
+
+.plant-detail-page .care-requirements article h3 {
+  font-size: 24px;
+  margin-bottom: 18px;
+}
+
+.plant-detail-page .care-requirements article p {
+  font-size: 17px;
+  line-height: 1.75;
+}
+
+/* Профиль: большее место для аватара, настройки справа от редактирования. */
+.profile-top {
+  grid-template-columns: 220px minmax(0, 1fr) auto;
+  gap: 36px;
+  min-height: 390px;
+}
+
+.profile-photo {
+  width: 220px;
+  height: 220px;
+  min-height: 220px;
+  border-radius: 50% !important;
+  overflow: hidden;
+}
+
+.profile-photo .placeholder-circle {
+  width: 112px;
+  height: 112px;
+}
+
+.profile-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.profile-settings-placeholder {
+  order: 2;
+}
+
+.profile-edit-button {
+  order: 1;
+}
+
+@media (max-width: 760px) {
+  .team-grid {
+    transform: none;
+  }
+  .team-card.team-евсей {
+    margin-top: 24px;
+  }
+  .profile-top {
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: 18px;
+  }
+  .profile-photo {
+    width: 140px;
+    height: 140px;
+    min-height: 140px;
+  }
+  .profile-photo .placeholder-circle {
+    width: 76px;
+    height: 76px;
+  }
+}
+
+/* Тёмная тема: поверхности и текст ухода, диагностики и карты имеют контраст. */
+:root.theme-dark .care-page, :root.theme-dark .care-main, :root.theme-dark .care-dashboard, :root.theme-dark .care-history, :root.theme-dark .calendar-box, :root.theme-dark .calendar-note, :root.theme-dark .care-empty, :root.theme-dark .diagnostics-page, :root.theme-dark .diagnostics-upload, :root.theme-dark .diagnostic-dropzone, :root.theme-dark .diagnostics-empty, :root.theme-dark .map-page, :root.theme-dark .map-layout, :root.theme-dark .map-filters, :root.theme-dark .map-placeholder, :root.theme-dark .shop-empty, :root.theme-dark .plant-detail-page, :root.theme-dark .plant-detail-copy, :root.theme-dark .plant-detail-photo, :root.theme-dark .care-requirements article {
+  background-color: var(--card) !important;
+  color: var(--ink) !important;
+  border-color: var(--line) !important;
+}
+
+:root.theme-dark .care-page p, :root.theme-dark .care-page h1, :root.theme-dark .care-page h2, :root.theme-dark .care-page h3, :root.theme-dark .care-page button, :root.theme-dark .care-history-empty, :root.theme-dark .calendar-note p, :root.theme-dark .diagnostics-page p, :root.theme-dark .diagnostics-page h1, :root.theme-dark .diagnostics-page h2, :root.theme-dark .diagnostics-page strong, :root.theme-dark .diagnostics-page small, :root.theme-dark .map-page p, :root.theme-dark .map-page h1, :root.theme-dark .map-page h2, :root.theme-dark .map-page h3, :root.theme-dark .map-page label, :root.theme-dark .map-page input, :root.theme-dark .plant-detail-page p, :root.theme-dark .plant-detail-page h1, :root.theme-dark .plant-detail-page h2, :root.theme-dark .plant-detail-page h3, :root.theme-dark .plant-detail-page small {
+  color: var(--ink) !important;
+}
+
+:root.theme-dark .calendar-week button {
+  background: #4b4b3d;
+  color: var(--ink);
+}
+
+:root.theme-dark .calendar-week button.today {
+  background: var(--olive);
+  color: #f6e5c3;
+}
+
+:root.theme-dark .calendar-note .olive-button, :root.theme-dark .care-page .olive-button, :root.theme-dark .diagnostics-page .analyze-button {
+  color: #fff0d3 !important;
+}
+
+:root.theme-dark .map-placeholder .image-placeholder {
+  background: #3b3a30 !important;
+  border-color: var(--line) !important;
+}
+
+/* 17. Финальные корректировки по проверке интерфейса */
+/* Фон страниц остаётся общим; не растягиваем коричневую поверхность на весь экран. */
+.page, .care-page, .diagnostics-page, .map-page, .community-page, .plant-detail-page {
+  background: transparent !important;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* В тёмной теме фоновые панели должны быть отдельными карточками, а не квадратной подложкой. */
+:root.theme-dark .care-page, :root.theme-dark .care-main, :root.theme-dark .care-dashboard, :root.theme-dark .diagnostics-page, :root.theme-dark .map-page, :root.theme-dark .community-page, :root.theme-dark .plant-detail-page {
+  background: transparent !important;
+  color: var(--ink) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+:root.theme-dark .my-plants, :root.theme-dark .calendar-box, :root.theme-dark .calendar-note, :root.theme-dark .care-history, :root.theme-dark .care-history-empty, :root.theme-dark .diagnostics-upload, :root.theme-dark .diagnostic-dropzone, :root.theme-dark .map-layout, :root.theme-dark .map-filters, :root.theme-dark .map-placeholder, :root.theme-dark .shop-empty, :root.theme-dark .plant-detail-copy, :root.theme-dark .plant-detail-photo, :root.theme-dark .care-requirements article, :root.theme-dark .post-card {
+  background: var(--card) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 26px !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+}
+
+:root.theme-dark .map-filters input, :root.theme-dark .catalog-search input, :root.theme-dark .create-post textarea {
+  background: #303129 !important;
+  color: var(--ink) !important;
+  border-color: var(--line) !important;
+}
+
+:root.theme-dark .map-filters, :root.theme-dark .map-layout {
+  overflow: hidden;
+}
+
+:root.theme-dark .profile-tabs button.active, :root.theme-dark .care-tabs button.active {
+  background: transparent !important;
+  color: #aab77a !important;
+  box-shadow: inset 0 -5px 0 #aab77a !important;
+}
+
+:root.theme-dark .care-tabs button, :root.theme-dark .profile-tabs button {
+  background: transparent !important;
+  color: var(--ink) !important;
+}
+
+/* О нас: роли единым текстом; карточки выравниваются, специализация Евсея — наверху. */
+.team-grid {
+  transform: translateX(-12px);
+}
+
+.team-card.team-евсей {
+  transform: none !important;
+}
+
+.team-card.team-евсей .team-role {
+  order: 0;
+  position: relative !important;
+  top: -1px;
+  margin: 0 0 18px !important;
+  padding: 0 8px !important;
+  min-height: 0;
+  height: auto;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.team-card.team-евсей > .image-placeholder, .team-card.team-евсей .team-name {
+  position: relative;
+  top: 22px;
+}
+
+.team-card .team-role, .team-card.team-евсей .team-role {
+  color: var(--ink) !important;
+  background: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  text-shadow: none;
+}
+
+:root.theme-dark .team-card, :root.theme-dark .team-card .team-role, :root.theme-dark .team-card .team-name, :root.theme-dark .team-card > .image-placeholder {
+  background-image: none !important;
+}
+
+:root.theme-dark .team-card .team-role {
+  background: transparent !important;
+}
+
+/* Карточка каталога — компактная; тестовая заглушка не содержит декоративного цветка. */
+.catalog-preview-grid {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.catalog-preview-card {
+  width: min(100%, 310px) !important;
+  max-width: 310px !important;
+  min-height: 0 !important;
+  border-radius: 24px !important;
+  overflow: hidden;
+}
+
+.catalog-preview-card .catalog-plant-image {
+  height: 260px !important;
+}
+
+.catalog-preview-card .db-image-placeholder {
+  min-height: 0;
+  height: 100%;
+}
+
+.catalog-preview-card .catalog-placeholder-mark {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 190px;
+  background: transparent;
+  border: 0;
+}
+
+.catalog-preview-card .catalog-plant-image .db-image-placeholder span:not(.catalog-placeholder-mark) {
+  display: none;
+}
+
+.catalog-preview-card strong {
+  font-size: 17px !important;
+}
+
+.catalog-preview-card small {
+  font-size: 12px !important;
+}
+
+/* Пустой календарь: ни один день не выбран по умолчанию. */
+.calendar-week button.today {
+  background: transparent !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+}
+
+:root.theme-dark .calendar-week button.today {
+  background: #4b4b3d !important;
+  color: var(--ink) !important;
+}
+
+/* Текст и заглушки в диагностике и сообществе увеличены для будущих ассетов. */
+.diagnostic-dropzone strong {
+  font-size: clamp(20px, 2vw, 27px) !important;
+}
+
+.diagnostic-dropzone > span:not(.upload-symbol) {
+  font-size: clamp(15px, 1.35vw, 19px) !important;
+}
+
+.diagnostics-title p {
+  font-size: clamp(16px, 1.5vw, 20px) !important;
+}
+
+.community-page .page-heading p {
+  font-size: clamp(16px, 1.5vw, 20px) !important;
+}
+
+.community-page .post-image {
+  min-height: 330px !important;
+}
+
+.community-page .post-author .image-placeholder {
+  width: 68px !important;
+  height: 68px !important;
+  min-height: 68px !important;
+  border-radius: 50% !important;
+}
+
+.community-page .post-author .placeholder-circle {
+  width: 30px;
+  height: 30px;
+}
+
+/* Профиль: аватар занимает весь круг; описание почти на всю ширину карточки. */
+.profile-top {
+  grid-template-columns: 250px minmax(0,1fr) auto !important;
+  gap: 32px !important;
+}
+
+.profile-photo {
+  width: 250px !important;
+  height: 250px !important;
+  min-height: 250px !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+}
+
+.profile-photo .placeholder-circle {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 50% !important;
+}
+
+.profile-info .profile-bio {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 110px;
+  padding: 18px 22px !important;
+  font-size: 16px !important;
+}
+
+.profile-stats {
+  margin-top: 24px !important;
+}
+
+.profile-stats span {
+  font-size: 15px !important;
+}
+
+.profile-stats b {
+  font-size: 25px !important;
+}
+
+@media (max-width: 760px) {
+  .team-grid {
+    transform: none;
+  }
+  .team-card.team-евсей > .image-placeholder,   .team-card.team-евсей .team-name {
+    top: 0;
+  }
+  .profile-top {
+    grid-template-columns: 140px minmax(0,1fr) !important;
+  }
+  .profile-photo {
+    width: 140px !important;
+    height: 140px !important;
+    min-height: 140px !important;
+  }
+}
+
+/* ========================================================================== */
+/* 18. Подготовка ассетов, публикации и финальная доступность темы             */
+/* ========================================================================== */
+/* Слоты ассетов: если файл появится в public/assets/icons, он подставится сам. */
+.asset-slot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+
+.asset-slot > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1;
+}
+
+.asset-slot-loaded .asset-slot-fallback {
+  display: none;
+}
+
+.asset-slot-fallback {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.hero-icon-placeholder {
+  border-radius: 50% !important;
+  border: 0 !important;
+  width: 86px !important;
+  height: 86px !important;
+  background: var(--card) !important;
+}
+
+.hero-icon-placeholder .asset-slot-fallback {
+  border-radius: 50%;
+  background: var(--card);
+}
+
+/* Иконка поиска: круглая область остаётся пустой до добавления ассета. */
+.search-icon-placeholder {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 0;
+  overflow: hidden;
+}
+
+.search-icon-placeholder .asset-slot-fallback {
+  border-radius: 50%;
+  background: var(--card);
+}
+
+/* Публикация: выбор изображения, предпросмотр и лимит текста 500 символов. */
+.post-compose-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 8px 0 14px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.choose-post-photo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: 18px;
+  background: var(--olive);
+  color: #fff0d3;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.choose-post-photo input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.post-photo-preview {
+  display: block;
+  width: min(100%, 520px);
+  max-height: 520px;
+  object-fit: contain;
+  object-position: left center;
+  margin: 0 0 18px;
+  border-radius: 18px;
+}
+
+.create-post textarea {
+  min-height: 170px;
+  max-height: 420px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.community-page .post-author .image-placeholder {
+  width: 78px !important;
+  height: 78px !important;
+  min-height: 78px !important;
+  flex: 0 0 78px;
+}
+
+.community-page .post-author .placeholder-circle {
+  width: 36px;
+  height: 36px;
+}
+
+.community-page .post-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 680px;
+  min-height: 0 !important;
+  object-fit: contain;
+  object-position: left center;
+}
+
+/* Фотографии растения — вертикальные 9:16, без круга и без декоративной рамки. */
+.plant-detail-top {
+  grid-template-columns: minmax(240px, 360px) minmax(0, 1fr) !important;
+  align-items: start !important;
+  gap: clamp(28px, 4vw, 64px) !important;
+}
+
+.plant-detail-photo.plant-photo-portrait {
+  width: 100%;
+  height: auto !important;
+  aspect-ratio: 9 / 16;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: hidden;
+}
+
+.plant-detail-photo.plant-photo-portrait img, .plant-detail-photo.plant-photo-portrait > .image-placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 9 / 16;
+  object-fit: cover;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 0 !important;
+  background: var(--card);
+  box-shadow: none !important;
+}
+
+.plant-detail-photo.plant-photo-portrait .placeholder-circle, .similar-photo-placeholder .placeholder-circle {
+  display: none !important;
+}
+
+.plant-detail-photo.plant-photo-portrait .image-placeholder small, .similar-photo-placeholder small {
+  display: block;
+  padding: 12px;
+  text-align: center;
+}
+
+.similar-placeholder {
+  width: min(100%, 220px) !important;
+  aspect-ratio: 9 / 16;
+  border-radius: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.similar-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 9 / 16;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: var(--card) !important;
+  box-shadow: none !important;
+}
+
+.detail-tags span {
+  border-radius: 18px !important;
+}
+
+:root.theme-dark .detail-tags span {
+  background: var(--olive) !important;
+  color: var(--ink) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Диагностика: оставляем исходный размер надписи и обеспечиваем контраст кнопки. */
+.diagnostic-dropzone strong {
+  font-size: 18px !important;
+}
+
+.diagnostic-dropzone > span:not(.upload-symbol) {
+  font-size: 14px !important;
+}
+
+.diagnostics-title p {
+  font-size: 14px !important;
+}
+
+:root.theme-dark .diagnostics-page .analyze-button {
+  background: var(--olive) !important;
+  color: #fff0d3 !important;
+  border: 1px solid #aab77a !important;
+}
+
+/* Тёмная тема: единый фон, скруглённые панели и контрастный текст без наложений. */
+:root.theme-dark .home-about, :root.theme-dark .home-help, :root.theme-dark .team-grid, :root.theme-dark .about-intro, :root.theme-dark .help-heading {
+  background: transparent !important;
+  color: var(--ink) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+:root.theme-dark .team-card {
+  background: var(--card) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .16) !important;
+  overflow: visible !important;
+}
+
+:root.theme-dark .team-card .team-role {
+  display: block !important;
+  background: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  color: var(--ink) !important;
+}
+
+:root.theme-dark .team-card .team-name {
+  border-radius: 0 0 18px 18px !important;
+  background: var(--olive) !important;
+  color: var(--ink) !important;
+}
+
+:root.theme-dark .care-page, :root.theme-dark .care-dashboard, :root.theme-dark .care-main, :root.theme-dark .diagnostics-page, :root.theme-dark .map-page, :root.theme-dark .community-page, :root.theme-dark .plant-detail-page {
+  background: transparent !important;
+  color: var(--ink) !important;
+}
+
+:root.theme-dark .my-plants, :root.theme-dark .calendar-box, :root.theme-dark .calendar-note, :root.theme-dark .care-history, :root.theme-dark .care-history-empty, :root.theme-dark .diagnostics-upload, :root.theme-dark .diagnostic-dropzone, :root.theme-dark .map-layout, :root.theme-dark .map-filters, :root.theme-dark .map-placeholder, :root.theme-dark .shop-empty, :root.theme-dark .plant-detail-copy, :root.theme-dark .plant-detail-photo, :root.theme-dark .care-requirements article, :root.theme-dark .post-card, :root.theme-dark .create-post {
+  background: var(--card) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .14) !important;
+}
+
+:root.theme-dark .plant-detail-photo.plant-photo-portrait, :root.theme-dark .similar-placeholder, :root.theme-dark .similar-photo-placeholder {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+:root.theme-dark .care-page h1, :root.theme-dark .care-page h2, :root.theme-dark .care-page h3, :root.theme-dark .care-page p, :root.theme-dark .care-page button, :root.theme-dark .diagnostics-page h1, :root.theme-dark .diagnostics-page h2, :root.theme-dark .diagnostics-page p, :root.theme-dark .diagnostics-page strong, :root.theme-dark .map-page h1, :root.theme-dark .map-page h2, :root.theme-dark .map-page h3, :root.theme-dark .map-page p, :root.theme-dark .community-page h1, :root.theme-dark .community-page h2, :root.theme-dark .community-page h3, :root.theme-dark .community-page p, :root.theme-dark .plant-detail-page h1, :root.theme-dark .plant-detail-page h2, :root.theme-dark .plant-detail-page h3, :root.theme-dark .plant-detail-page p {
+  color: var(--ink) !important;
+}
+
+:root.theme-dark .profile-tabs, :root.theme-dark .care-tabs {
+  background: transparent !important;
+  border-color: var(--line) !important;
+}
+
+:root.theme-dark .profile-tabs button, :root.theme-dark .care-tabs button {
+  background: transparent !important;
+  color: var(--ink) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+:root.theme-dark .profile-tabs button.active, :root.theme-dark .care-tabs button.active {
+  background: transparent !important;
+  color: #aab77a !important;
+  box-shadow: inset 0 -5px 0 #aab77a !important;
+}
+
+:root.theme-dark .map-filters input, :root.theme-dark .catalog-search input, :root.theme-dark .create-post textarea {
+  background: #303129 !important;
+  color: var(--ink) !important;
+  border-color: var(--line) !important;
+}
+
+:root.theme-dark .map-filters input::placeholder, :root.theme-dark .create-post textarea::placeholder {
+  color: rgba(241, 230, 209, .62) !important;
+}
+
+@media (max-width: 760px) {
+  .plant-detail-top {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .plant-detail-photo.plant-photo-portrait {
+    width: min(100%, 280px);
+  }
+}
+
+/* ========================================================================== */
+/* 19. Корректировка главной страницы и карточки растения                      */
+/* ========================================================================== */
+
+/* Стабильная двухколоночная сетка: иллюстрация и декоративные слоты не уезжают за край. */
+.home-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  align-items: start;
+  gap: clamp(24px, 3vw, 52px);
+  min-height: 900px;
+  padding: 0 clamp(32px, 6vw, 100px);
+  overflow: visible;
+}
+
+.hero-copy {
+  min-width: 0;
+  padding-top: 70px;
+}
+
+.hero-copy h1 {
+  max-width: 760px;
+  overflow-wrap: normal;
+}
+
+.hero-description {
+  max-width: 560px;
+}
+
+.hero-art-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  min-width: 0;
+  height: 720px;
+  margin: 44px auto 0;
+  justify-self: center;
+  overflow: visible;
+  isolation: isolate;
+}
+
+.hero-plant-button.hero-image-placeholder {
+  position: absolute;
+  top: 55px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(72%, 340px);
+  height: 550px;
+  padding: 20px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  z-index: 2;
+}
+
+.hero-plant-button.hero-image-placeholder .hero-art-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 44px;
+  background: var(--card);
+  z-index: -1;
+}
+
+.placeholder-image-mark {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+/* Слоты остаются на месте будущих файлов, но не выглядят как лишние круглые плашки. */
+.hero-icon-placeholder {
+  position: absolute;
+  width: 82px;
+  height: 82px;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible;
+  z-index: 3;
+}
+
+.hero-icon-placeholder .asset-slot-fallback {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+.hero-icon-placeholder > img {
+  object-fit: contain;
+}
+
+.icon-one { top: 30px; right: 8%; }
+.icon-two { top: 230px; right: 0; }
+.icon-three { right: 8%; bottom: 42px; }
+.icon-four { left: 8%; bottom: 52px; }
+.icon-five { top: 240px; left: 0; }
+
+.hero-catalog-button {
+  left: 50%;
+  bottom: 4px;
+  transform: translateX(-50%);
+}
+
+.hero-hint {
+  left: 50%;
+  bottom: -30px;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 100%;
+  text-align: center;
+}
+
+.fact-card strong {
+  display: block;
+  text-align: left;
+  font-size: clamp(25px, 2vw, 32px);
+}
+
+/* Карточка растения чуть шире, не 9:16, со скруглением и без декоративного круга. */
+.plant-detail-top {
+  grid-template-columns: minmax(300px, 390px) minmax(0, 1fr) !important;
+  gap: clamp(28px, 4vw, 58px) !important;
+  align-items: start !important;
+}
+
+.plant-detail-photo.plant-photo-portrait {
+  width: 100%;
+  height: auto !important;
+  aspect-ratio: 4 / 5;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 22px !important;
+  overflow: hidden;
+  background: var(--card) !important;
+  box-shadow: none !important;
+}
+
+.plant-detail-photo.plant-photo-portrait img,
+.plant-detail-photo.plant-photo-portrait > .image-placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 22px !important;
+  background: var(--card) !important;
+  box-shadow: none !important;
+}
+
+.plant-detail-photo .placeholder-circle,
+.plant-detail-photo .placeholder-image-mark,
+.plant-detail-photo .image-placeholder::before,
+.plant-detail-photo .image-placeholder::after,
+.similar-photo-placeholder .placeholder-circle {
+  display: none !important;
+  content: none !important;
+}
+
+.plant-detail-photo .image-placeholder small {
+  display: block;
+  padding: 18px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.plant-detail-copy .detail-tags:empty,
+.plant-detail-copy .detail-tags span:empty {
+  display: none !important;
+}
+
+.plant-detail-copy .detail-tags {
+  display: none;
+}
+
+.similar-plants-grid.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 260px));
+  gap: 24px;
+  align-items: stretch;
+}
+
+.similar-plants-grid .catalog-plant-card {
+  width: 100%;
+  min-width: 0;
+  aspect-ratio: auto;
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.similar-plants-grid .catalog-plant-image {
+  aspect-ratio: 4 / 5;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.similar-plants-grid .db-image-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 0 !important;
+  border-radius: 18px !important;
+  background: var(--card) !important;
+}
+
+.similar-empty-card {
+  pointer-events: none;
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.catalog-preview-card .catalog-test-plant-icon,
+.catalog-preview-card .catalog-placeholder-mark,
+.catalog-preview-card .catalog-plant-image .db-image-placeholder span {
+  display: none !important;
+}
+
+.catalog-preview-card .catalog-plant-image {
+  aspect-ratio: 4 / 5;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.catalog-preview-card .db-image-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 0 !important;
+  border-radius: 20px !important;
+  background: var(--card) !important;
+}
+
+.create-post textarea,
+.profile-edit-page textarea,
+.profile-bio {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 900px) {
+  .home-hero {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    gap: 8px;
+    padding: 0 24px 72px;
+  }
+
+  .hero-copy {
+    padding-top: 30px;
+  }
+
+  .hero-art-wrap {
+    height: 650px;
+    margin-top: 10px;
+    width: min(100%, 560px);
+  }
+
+  .hero-plant-button.hero-image-placeholder {
+    width: min(70%, 320px);
+    height: 500px;
+    top: 45px;
+  }
+
+  .hero-icon-placeholder {
+    width: 64px;
+    height: 64px;
+  }
+
+  .plant-detail-top {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .plant-detail-photo.plant-photo-portrait {
+    width: min(100%, 390px);
+  }
+}
+
+@media (max-width: 520px) {
+  .hero-art-wrap {
+    height: 520px;
+  }
+
+  .hero-plant-button.hero-image-placeholder {
+    height: 390px;
+    width: min(68%, 260px);
+  }
+
+  .hero-icon-placeholder {
+    width: 46px;
+    height: 46px;
+  }
+
+  .icon-two { right: 0; }
+  .icon-five { left: 0; }
+
+  .similar-plants-grid.catalog-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+/* Сохраняем корректные пропорции фото растения и в тёмной теме. */
+:root.theme-dark .plant-detail-photo.plant-photo-portrait,
+:root.theme-dark .plant-detail-photo.plant-photo-portrait img,
+:root.theme-dark .plant-detail-photo.plant-photo-portrait > .image-placeholder {
+  border: 0 !important;
+  border-radius: 22px !important;
+  background: var(--card) !important;
+  box-shadow: none !important;
+}
+
+:root.theme-dark .plant-detail-photo.plant-photo-portrait {
+  aspect-ratio: 4 / 5;
+}

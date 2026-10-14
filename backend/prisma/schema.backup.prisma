@@ -1,0 +1,266 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  schemas   = ["public", "auth"]
+}
+
+enum UserRole {
+  USER
+  EXPERT
+  ADMIN
+}
+
+enum ExperienceLevel {
+  BEGINNER
+  EXPERIENCED
+}
+
+enum CareActionType {
+  WATERING
+  FERTILIZING
+  REPOTTING
+  PRUNING
+  MISTING
+  INSPECTION
+  OTHER
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum DiagnosisKind {
+  DISEASE
+  PEST
+  CONDITION
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  displayName  String
+  avatarUrl    String?
+  city         String?
+  role         UserRole @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  plants       UserPlant[]
+  posts        Post[]
+  comments     Comment[]
+  likes        PostLike[]
+  reviewedCare CareGuide[] @relation("CareGuideReviewer")
+  reviewedDiag DiagnosisEntry[] @relation("DiagnosisReviewer")
+
+  @@index([role])
+}
+
+model PlantSpecies {
+  id              String   @id @default(cuid())
+  name            String
+  latinName       String?  @unique
+  description     String   @db.Text
+  imageUrl        String?
+  light           String?  @db.Text
+  temperature     String?  @db.Text
+  humidity        String?  @db.Text
+  watering        String?  @db.Text
+  soil            String?  @db.Text
+  fertilizing     String?  @db.Text
+  difficulty      Int      @default(1)
+  isPetSafe       Boolean?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  guides          CareGuide[]
+  userPlants      UserPlant[]
+  diagnosisEntries DiagnosisEntry[]
+
+  @@index([name])
+}
+
+model CareGuide {
+  id          String          @id @default(cuid())
+  speciesId   String
+  title       String
+  level       ExperienceLevel @default(BEGINNER)
+  summary     String?         @db.Text
+  content     String          @db.Text
+  status      ContentStatus   @default(DRAFT)
+  reviewerId  String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  species     PlantSpecies @relation(fields: [speciesId], references: [id], onDelete: Cascade)
+  reviewer    User?        @relation("CareGuideReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+
+  @@index([speciesId, level, status])
+}
+
+model UserPlant {
+  id          String   @id @default(cuid())
+  userId      String
+  speciesId   String
+  nickname    String?
+  acquiredAt  DateTime?
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  species     PlantSpecies @relation(fields: [speciesId], references: [id], onDelete: Restrict)
+  careLogs    CareLog[]
+
+  @@index([userId])
+  @@index([speciesId])
+}
+
+model CareLog {
+  id          String         @id @default(cuid())
+  userPlantId String
+  action      CareActionType
+  notes       String?        @db.Text
+  performedAt DateTime       @default(now())
+  nextDueAt   DateTime?
+
+  userPlant   UserPlant @relation(fields: [userPlantId], references: [id], onDelete: Cascade)
+
+  @@index([userPlantId, performedAt])
+  @@index([nextDueAt])
+}
+
+model DiagnosisEntry {
+  id            String        @id @default(cuid())
+  name          String
+  kind          DiagnosisKind
+  description   String        @db.Text
+  causes        String?       @db.Text
+  treatment     String        @db.Text
+  imageUrl      String?
+  status        ContentStatus @default(DRAFT)
+  speciesId     String?
+  reviewerId    String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  species       PlantSpecies? @relation(fields: [speciesId], references: [id], onDelete: SetNull)
+  reviewer      User?         @relation("DiagnosisReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  symptoms      DiagnosisSymptom[]
+
+  @@index([kind, status])
+  @@index([name])
+}
+
+model Symptom {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String? @db.Text
+  diagnoses   DiagnosisSymptom[]
+}
+
+model DiagnosisSymptom {
+  diagnosisId String
+  symptomId   String
+
+  diagnosis   DiagnosisEntry @relation(fields: [diagnosisId], references: [id], onDelete: Cascade)
+  symptom     Symptom        @relation(fields: [symptomId], references: [id], onDelete: Cascade)
+
+  @@id([diagnosisId, symptomId])
+  @@index([symptomId])
+}
+
+model Store {
+  id          String   @id @default(cuid())
+  name        String
+  city        String
+  address     String
+  latitude    Decimal? @db.Decimal(10, 7)
+  longitude   Decimal? @db.Decimal(10, 7)
+  phone       String?
+  websiteUrl  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products    StoreProduct[]
+
+  @@index([city, name])
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  category    String
+  description String?  @db.Text
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+
+  stores      StoreProduct[]
+
+  @@index([category])
+}
+
+model StoreProduct {
+  storeId     String
+  productId   String
+  price       Decimal? @db.Decimal(10, 2)
+  inStock     Boolean?
+  note        String?
+
+  store       Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([storeId, productId])
+  @@index([productId])
+}
+
+model Post {
+  id          String        @id @default(cuid())
+  authorId    String
+  title       String
+  text        String        @db.Text
+  imageUrl    String?
+  status      ContentStatus @default(PUBLISHED)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments    Comment[]
+  likes       PostLike[]
+
+  @@index([createdAt])
+  @@index([authorId, createdAt])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String
+  authorId  String
+  text      String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post      Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author    User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([postId, createdAt])
+}
+
+model PostLike {
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post      Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([postId, userId])
+  @@index([userId])
+}
