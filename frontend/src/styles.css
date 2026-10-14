@@ -38,12 +38,12 @@ button {
   cursor: pointer
 }
 
-button: focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible {
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible {
   outline: 3px solid #b1a96b;
   outline-offset: 3px
 }
 
-button: disabled {
+button:disabled {
   opacity: .5;
   cursor: not-allowed
 }
@@ -5022,9 +5022,6 @@ button: disabled {
   }
 }
 
-/* ========================================================================== */
-/* 19. Корректировка главной страницы и карточки растения                      */
-/* ========================================================================== */
 
 /* Стабильная двухколоночная сетка: иллюстрация и декоративные слоты не уезжают за край. */
 .home-hero {
