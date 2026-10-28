@@ -1,0 +1,67 @@
+export default function Diagnostics({
+  diagnosticFile,
+  setDiagnosticFile,
+  diagnosticMessage,
+  setDiagnosticMessage,
+  problems,
+}) {
+  const analyze = () => {
+    setDiagnosticMessage(
+      diagnosticFile
+        ? 'Автоматическая диагностика пока не подключена. ' +
+        'Справочник болезней появится после добавления данных.'
+        : 'Сначала выберите фотографию растения.',
+    );
+  };
+
+  return (
+    <main className="page diagnostics-page">
+      <div className="diagnostics-title">
+        <h1>Диагностика</h1>
+        <p>
+          Загрузите фото больного растения или найдите симптомы, и наш алгоритм
+          поможет определить проблему и предложит способы лечения.
+        </p>
+      </div>
+
+      <section className="diagnostics-upload">
+        <label className="diagnostic-dropzone">
+          <span className="upload-symbol">⇩</span>
+          <strong>
+            {diagnosticFile
+              ? diagnosticFile.name
+              : 'Загрузите фото больного растения'}
+          </strong>
+          <span>Перетащите файл сюда или нажмите для выбора</span>
+          <small>PNG, JPG до 10 мб</small>
+          <input
+            type="file"
+            accept="image/png,image/jpeg"
+            onChange={(event) => {
+              setDiagnosticFile(event.target.files?.[0] || null);
+              setDiagnosticMessage('');
+            }}
+          />
+        </label>
+
+        <button className="analyze-button" onClick={analyze}>
+          Проанализировать
+        </button>
+
+        {diagnosticMessage && (
+          <p className="diagnostic-message">{diagnosticMessage}</p>
+        )}
+      </section>
+
+      {(!problems || problems.length === 0) && (
+        <div className="db-empty diagnostics-empty">
+          <h2>Справочник симптомов пока пуст</h2>
+          <p>
+            Поиск по симптомам появится здесь, когда справочник будет добавлен в
+            базу данных.
+          </p>
+        </div>
+      )}
+    </main>
+  );
+}
