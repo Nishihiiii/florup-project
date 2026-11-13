@@ -1,4 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
 :root {
   font-family: 'Unbounded',sans-serif;
   color: #503e2f;
@@ -49,6 +55,8 @@ textarea:focus-visible {
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
 }
 
 .app-shell {
@@ -4214,7 +4222,6 @@ button:disabled {
   border-color: var(--tan);
 }
 
-/* 16. Адаптация для мобильных экранов */
 @media (max-width: 760px) {
   .fact-card {
     margin-top: 28px;
@@ -5266,7 +5273,6 @@ button:disabled {
 }
 
 
-/* Сохраняем корректные пропорции фото растения и в тёмной теме. */
 :root.theme-dark .plant-detail-photo.plant-photo-portrait,
 :root.theme-dark .plant-detail-photo.plant-photo-portrait img,
 :root.theme-dark .plant-detail-photo.plant-photo-portrait > .image-placeholder {

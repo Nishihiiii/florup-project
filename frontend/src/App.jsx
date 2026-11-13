@@ -16,7 +16,7 @@ import Footer from './components/Footer.jsx';
 import AdminPanel from './pages/AdminPanel.jsx';
 import ExpertPanel from './pages/ExpertPanel.jsx';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || '';
 const PAGE_BY_PATH = {
   '/': 'home',
   '/catalog': 'catalog',

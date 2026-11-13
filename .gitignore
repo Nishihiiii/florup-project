@@ -1,6 +1,11 @@
-node_modules
-**/node_modules
+node_modules/
+**/node_modules/
 .env
-dist/
-coverage
+.env.*
+!.env.example
+**/dist/
+coverage/
 .DS_Store
+*.log
+deploy/certs/*
+!deploy/certs/.gitkeep

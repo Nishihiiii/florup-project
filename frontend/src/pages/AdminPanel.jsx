@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || '';
 const emptyForm = { name: '', latin_name: '', description: '', care_watering_text: '', care_lighting_text: '', care_temp_text: '' };
 
 export default function AdminPanel({ go, notify }) {
