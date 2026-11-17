@@ -1,122 +1,141 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Placeholder from '../components/Placeholder.jsx';
+import { apiFetch } from '../utils/api.js';
 
-export default function Profile({
-  demoUser,
-  go,
-  profileName,
-  profileBio,
-  posts,
-}) {
+export default function Profile({ user, go, posts, refreshUser }) {
   const [tab, setTab] = useState('plants');
+  const [myPlants, setMyPlants] = useState([]);
 
-  if (!demoUser) {
-    return (
-      <main className="page profile-page">
-        <div className="db-empty">
-          <h1>Профиль</h1>
-          <h2>Войдите, чтобы открыть профиль</h2>
-          <p>
-            Можно использовать демонстрационный вход — серверная авторизация
-            пока не подключена.
-          </p>
-          <button className="olive-button" onClick={() => go('login')}>
-            Войти
-          </button>
-        </div>
-      </main>
-    );
-  }
+  useEffect(() => {
+    refreshUser?.();
+    apiFetch('/api/user-plants')
+      .then((data) => {
+        if (Array.isArray(data)) setMyPlants(data);
+      })
+      .catch(() => {});
+  }, [refreshUser]);
 
-  const ownPosts = posts.filter(
-    (post) => post.author === demoUser.name || post.author === profileName,
-  );
-  const likes = ownPosts.reduce((total, post) => total + (post.likes || 0), 0);
+  const ownPosts = posts.filter((p) => p.user_id === user.id);
+  const totalLikes = ownPosts.reduce((sum, p) => sum + (p.likes || 0), 0);
+  const plantsCount = myPlants.length || user.stats?.plants || 0;
+  const likesCount = Math.max(totalLikes, user.stats?.likes || 0);
 
   return (
-    <main className="page profile-page">
-      <button className="back-link" onClick={() => go('community')}>
-        ← Вернуться в сообщество...
+    <main className="mx-auto max-w-[1180px] px-5 py-8">
+      <button className="mb-6 text-xs text-tan hover:underline" onClick={() => go('community')}>
+        ← Вернуться в сообщество
       </button>
 
-      <section className="profile-top">
-        <Placeholder label="" className="profile-photo" />
+      <section className="grid grid-cols-1 items-center gap-8 rounded-3xl border-2 border-ink/20 bg-card p-8 dark:border-[#68644e] dark:bg-[#3b3a30] md:grid-cols-[200px_1fr_auto]">
+        <div className="mx-auto h-44 w-44 overflow-hidden rounded-full bg-pale">
+          {user.avatar_url ? (
+            <img src={user.avatar_url} alt={user.name} className="h-full w-full object-cover" />
+          ) : (
+            <Placeholder label="" className="h-full w-full" />
+          )}
+        </div>
 
-        <div className="profile-info">
-          <h1>{profileName || demoUser.name}</h1>
-          <p className="profile-email">{demoUser.email}</p>
-          <p className="profile-bio">
-            {profileBio || 'Расскажите немного о себе и своих растениях.'}
+        <div>
+          <h1 className="text-3xl font-black">{user.name}</h1>
+          <p className="mt-1 text-xs text-ink/70 dark:text-[#f1e6d1]/70">{user.email}</p>
+          <p className="mt-4 rounded-2xl border border-tan/50 p-4 text-xs leading-relaxed">
+            {user.bio || 'Расскажите о себе и своих растениях.'}
           </p>
 
-          <div className="profile-stats">
-            <span><b>0</b> Растения</span>
-            <span><b>{ownPosts.length}</b> Публикации</span>
-            <span><b>{likes}</b> Лайки</span>
+          <div className="mt-5 flex gap-8 text-center text-xs">
+            <div>
+              <b className="block text-xl font-black text-tan">{plantsCount}</b>
+              Растения
+            </div>
+            <div>
+              <b className="block text-xl font-black text-tan">{ownPosts.length}</b>
+              Публикации
+            </div>
+            <div>
+              <b className="block text-xl font-black text-tan">{likesCount}</b>
+              Лайки
+            </div>
           </div>
         </div>
 
-        <div className="profile-actions">
+        <div className="flex flex-wrap items-center gap-3 self-start">
           <button
-            className="profile-settings-placeholder"
-            onClick={() => go('settings')}
-            aria-label="Открыть настройки"
-            title="Настройки"
-          />
-          <button
-            className="olive-button profile-edit-button"
             onClick={() => go('profile-edit')}
+            className="rounded-full bg-ink px-5 py-2.5 text-xs font-bold text-cream hover:opacity-90"
           >
             Редактировать
+          </button>
+          <button
+            onClick={() => go('settings')}
+            aria-label="Настройки"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-tan text-base"
+          >
+            ⚙
           </button>
         </div>
       </section>
 
-      <div className="profile-tabs">
+      <div className="mt-8 flex flex-wrap gap-3 border-b border-line pb-3 dark:border-[#68644e]">
         <button
-          className={tab === 'plants' ? 'active' : ''}
           onClick={() => setTab('plants')}
+          className={`rounded-full px-5 py-2 text-xs font-bold ${tab === 'plants' ? 'bg-olive text-cream' : ''}`}
         >
-          Мои растения
+          Мои растения ({plantsCount})
         </button>
         <button
-          className={tab === 'posts' ? 'active' : ''}
           onClick={() => setTab('posts')}
+          className={`rounded-full px-5 py-2 text-xs font-bold ${tab === 'posts' ? 'bg-olive text-cream' : ''}`}
         >
-          Публикации
+          Публикации ({ownPosts.length})
         </button>
       </div>
 
       {tab === 'plants' ? (
-        <div className="db-empty">
-          <h2>Пока нет растений</h2>
-          <p>
-            Добавьте первое растение из каталога, чтобы начать вести свою
-            коллекцию.
-          </p>
-          <button className="olive-button" onClick={() => go('catalog')}>
-            Открыть каталог
-          </button>
+        <div className="mt-6 space-y-6">
+          {myPlants.length > 0 ? (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {myPlants.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => go('care')}
+                  className="rounded-2xl bg-card p-5 text-left shadow-sm transition hover:bg-pale dark:bg-[#3b3a30]"
+                >
+                  <strong className="block text-sm font-bold">
+                    {item.nickname || item.plants?.name || 'Растение'}
+                  </strong>
+                  <span className="mt-1 block text-[11px] text-ink/65 dark:text-[#f1e6d1]/65">
+                    Перейти к календарю ухода →
+                  </span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-ink/70">У вас пока нет добавленных растений.</p>
+          )}
+
+          <div className="flex flex-wrap gap-3">
+            <button onClick={() => go('care')} className="rounded-full bg-olive px-5 py-2.5 text-xs font-bold text-cream">
+              Открыть «Уход и календарь»
+            </button>
+            <button onClick={() => go('admin')} className="rounded-full bg-ink px-5 py-2.5 text-xs font-bold text-cream">
+              Панель администратора
+            </button>
+            <button onClick={() => go('expert')} className="rounded-full bg-tan px-5 py-2.5 text-xs font-bold text-cream">
+              Панель эксперта
+            </button>
+          </div>
         </div>
-      ) : ownPosts.length ? (
-        <div className="profile-post-grid">
+      ) : ownPosts.length > 0 ? (
+        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
           {ownPosts.map((post) => (
-            <article className="post-card" key={post.id}>
-              <p>{post.text}</p>
-              <div className="post-actions">
-                <span>♡ {post.likes || 0}</span>
-              </div>
+            <article key={post.id} className="rounded-2xl bg-card p-5 text-xs dark:bg-[#3b3a30]">
+              <p>{post.content}</p>
+              <span className="mt-2 block text-ink/60">♥ {post.likes}</span>
             </article>
           ))}
         </div>
       ) : (
-        <div className="db-empty profile-posts-empty">
-          <span className="sad-face-placeholder" aria-hidden="true">☹</span>
-          <p>
-            Пока у вас нет публикаций, но вы можете создать их в разделе
-            сообщества.
-          </p>
-        </div>
+        <p className="mt-6 text-xs text-ink/70">У вас пока нет публикаций.</p>
       )}
     </main>
   );

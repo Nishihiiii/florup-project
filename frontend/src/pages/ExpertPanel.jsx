@@ -1,67 +1,86 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { apiFetch } from '../utils/api.js';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
 const emptyForm = { name: '', description: '', treatment: '' };
 
-export default function ExpertPanel({ go, notify }) {
+export default function ExpertPanel({ go, problems, refreshData, notify }) {
   const [form, setForm] = useState(emptyForm);
-  const [problems, setProblems] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
-  async function loadProblems() {
-    setLoading(true); setError('');
+  const change = (e) => setForm((cur) => ({ ...cur, [e.target.name]: e.target.value }));
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    setError('');
     try {
-      const response = await fetch(`${API_URL}/api/problems`);
-      if (!response.ok) throw new Error(`Ошибка загрузки: ${response.status}`);
-      const data = await response.json();
-      setProblems(Array.isArray(data) ? data : data.data || []);
-    } catch (err) { setError(`${err.message}. Проверь backend и подключение к БД.`); }
-    finally { setLoading(false); }
-  }
-  useEffect(() => { loadProblems(); }, []);
-  function change(event) { setForm((current) => ({ ...current, [event.target.name]: event.target.value })); }
-  async function submit(event) {
-    event.preventDefault(); setSaving(true); setError('');
-    try {
-      const response = await fetch(`${API_URL}/api/problems`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(result.error || `Не удалось сохранить (${response.status})`);
-      setForm(emptyForm); await loadProblems(); notify?.('Материал сохранён в базе данных.');
-    } catch (err) { setError(err.message); }
-    finally { setSaving(false); }
-  }
-  return <main className="page">
-    <button className="back-link" onClick={() => go('home')}>← На главную</button>
-    <h1 className="section-title">Панель эксперта</h1>
-    <p>Добавление проверенных материалов о болезнях и вредителях растений.</p>
-    <form onSubmit={submit} className="db-empty" style={{ textAlign: 'left', marginBottom: 28 }}>
-      <h2>Новый материал</h2>
-      <label>Название проблемы *<input name="name" value={form.name} onChange={change} required maxLength={255} /></label>
-      <label>Описание симптомов *<textarea name="description" value={form.description} onChange={change} required rows={3} /></label>
-      <label>Рекомендации по лечению *<textarea name="treatment" value={form.treatment} onChange={change} required rows={3} /></label>
-      <button className="olive-button" type="submit" disabled={saving}>{saving ? 'Сохранение…' : 'Сохранить материал'}</button>
-      {error && <p role="alert">{error}</p>}
-    </form>
-    <h2 className="section-title">Материалы в базе ({problems.length})</h2>
-    {loading ? (
-      <p>Загрузка списка…</p>
-    ) : problems.length ? (
-      <div className="catalog-grid">
-        {problems.map((problem) => (
-          <article className="catalog-plant-card" key={problem.id}>
-            <strong>{problem.name}</strong>
-            <p>{problem.description}</p>
-            <small>
-              <b>Лечение:</b> {problem.treatment}
-            </small>
-          </article>
+      await apiFetch('/api/problems', {
+        method: 'POST',
+        body: JSON.stringify(form),
+      });
+      setForm(emptyForm);
+      await refreshData();
+      notify('Материал сохранён в базе данных!');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <main className="mx-auto max-w-[1200px] px-5 py-8">
+      <button className="mb-6 text-xs text-tan hover:underline" onClick={() => go('diagnostics')}>
+        ← Перейти к диагностике
+      </button>
+      <h1 className="text-3xl font-black">Панель эксперта</h1>
+
+      <form onSubmit={submit} className="my-6 space-y-4 rounded-3xl bg-card p-6 dark:bg-[#3b3a30]">
+        <input
+          name="name"
+          value={form.name}
+          onChange={change}
+          required
+          placeholder="Название проблемы *"
+          className="h-11 w-full rounded-xl border border-line bg-cream px-4 text-xs dark:border-[#68644e] dark:bg-[#303129]"
+        />
+        <textarea
+          name="description"
+          value={form.description}
+          onChange={change}
+          required
+          rows={3}
+          placeholder="Описание симптомов *"
+          className="w-full rounded-xl border border-line bg-cream p-4 text-xs dark:border-[#68644e] dark:bg-[#303129]"
+        />
+        <textarea
+          name="treatment"
+          value={form.treatment}
+          onChange={change}
+          required
+          rows={3}
+          placeholder="Рекомендации по лечению *"
+          className="w-full rounded-xl border border-line bg-cream p-4 text-xs dark:border-[#68644e] dark:bg-[#303129]"
+        />
+        {error && <p className="text-xs font-semibold text-red-700">{error}</p>}
+        <button
+          disabled={saving}
+          className="rounded-full bg-olive px-6 py-3 text-xs font-bold text-cream disabled:opacity-50"
+        >
+          {saving ? 'Сохранение…' : 'Сохранить материал'}
+        </button>
+      </form>
+
+      <h2 className="mb-4 text-xl font-bold">Материалы в базе ({problems.length})</h2>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {problems.map((p) => (
+          <div key={p.id} className="rounded-2xl bg-card p-4 text-xs dark:bg-[#3b3a30]">
+            <strong className="block text-sm">{p.name}</strong>
+            <p className="mt-1 text-ink/75 dark:text-[#f1e6d1]/75">{p.description}</p>
+          </div>
         ))}
       </div>
-    ) : (
-      <p>Записей пока нет.</p>
-    )}
-    <button className="back-link" onClick={loadProblems}>Обновить список</button>
-  </main>;
+    </main>
+  );
 }

@@ -1,76 +1,83 @@
 import { useState } from 'react';
+import { apiFetch } from '../utils/api.js';
 
-export default function Settings({ demoUser, go, logout, notify }) {
-  const [notifications, setNotifications] = useState(true);
-  const [dark, setDark] = useState(() =>
-    document.documentElement.classList.contains('theme-dark'),
-  );
+export default function Settings({ user, setUser, go, logout, notify }) {
+  const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'));
 
   const toggleTheme = () => {
-    const nextDark = !dark;
-    setDark(nextDark);
-    document.documentElement.classList.toggle('theme-dark', nextDark);
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle('dark', next);
+  };
+
+  const toggleNotifications = async () => {
+    if (!user) return;
+    try {
+      const res = await apiFetch('/api/auth/profile', {
+        method: 'PATCH',
+        body: JSON.stringify({ push_notifications: !user.push_notifications }),
+      });
+      setUser(res.user);
+    } catch (err) {
+      notify(err.message);
+    }
   };
 
   return (
-    <main className="page settings-page">
-      <button className="back-link" onClick={() => go('profile')}>
-        ← Вернуться в профиль...
+    <main className="mx-auto max-w-2xl px-5 py-8">
+      <button className="mb-6 text-xs text-tan hover:underline" onClick={() => go('profile')}>
+        ← Вернуться в профиль
       </button>
 
-      <div className="settings-panel">
-        <h1>Настройки</h1>
+      <div className="rounded-3xl border border-line bg-card p-8 dark:border-[#68644e] dark:bg-[#3b3a30]">
+        <h1 className="mb-6 text-3xl font-black">Настройки</h1>
 
-        <div className="setting-row">
+        {user && (
+          <div className="flex items-center justify-between border-b border-line/40 py-5 dark:border-[#68644e]">
+            <div>
+              <strong className="block text-sm">Уведомления</strong>
+              <span className="text-xs text-ink/70 dark:text-[#f1e6d1]/70">
+                Напоминания об уходе за растениями
+              </span>
+            </div>
+            <button
+              role="switch"
+              aria-checked={user.push_notifications}
+              onClick={toggleNotifications}
+              className={`flex h-7 w-12 items-center rounded-full p-1 transition ${
+                user.push_notifications ? 'justify-end bg-olive' : 'justify-start bg-line'
+              }`}
+            >
+              <span className="h-5 w-5 rounded-full bg-cream" />
+            </button>
+          </div>
+        )}
+
+        <div className="flex items-center justify-between border-b border-line/40 py-5 dark:border-[#68644e]">
           <div>
-            <strong>Уведомления</strong>
-            <span>Напоминания об уходе за растениями</span>
+            <strong className="block text-sm">Тёмная тема</strong>
+            <span className="text-xs text-ink/70 dark:text-[#f1e6d1]/70">
+              Переключение светлого и тёмного оформления
+            </span>
           </div>
           <button
-            className={`toggle-switch ${notifications ? 'on' : ''}`}
-            role="switch"
-            aria-checked={notifications}
-            onClick={() => setNotifications((value) => !value)}
-          >
-            <span />
-          </button>
-        </div>
-
-        <div className="setting-row">
-          <div>
-            <strong>Тема оформления</strong>
-            <span>Светлая или тёмная тема</span>
-          </div>
-          <button
-            className={`toggle-switch ${dark ? 'on' : ''}`}
             role="switch"
             aria-checked={dark}
             onClick={toggleTheme}
+            className={`flex h-7 w-12 items-center rounded-full p-1 transition ${
+              dark ? 'justify-end bg-olive' : 'justify-start bg-line'
+            }`}
           >
-            <span />
+            <span className="h-5 w-5 rounded-full bg-cream" />
           </button>
         </div>
 
-        <div className="setting-row">
-          <div>
-            <strong>Аккаунт</strong>
-            <span>{demoUser?.email || 'Демонстрационный аккаунт'}</span>
-          </div>
+        {user && (
           <button
-            className="setting-chevron"
-            onClick={() => notify('Это демонстрационный аккаунт.')}
+            onClick={logout}
+            className="mt-6 w-full rounded-full bg-ink py-3 text-xs font-bold text-cream hover:opacity-90"
           >
-            ›
-          </button>
-        </div>
-
-        {demoUser && (
-          <button className="setting-row logout-setting" onClick={logout}>
-            <div>
-              <strong>Выйти из аккаунта</strong>
-              <span>Завершить текущий сеанс</span>
-            </div>
-            <span className="setting-chevron">›</span>
+            Выйти из аккаунта ({user.email})
           </button>
         )}
       </div>

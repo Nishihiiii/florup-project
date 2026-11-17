@@ -2,24 +2,29 @@ import { useState } from 'react';
 
 const EXTENSIONS = ['svg', 'png', 'webp', 'jpg', 'jpeg'];
 
-// для ассета место
-
-
 export default function AssetSlot({ name, className = '', label = '' }) {
-  const [extensionIndex, setExtensionIndex] = useState(0);
+  const [extIndex, setExtIndex] = useState(0);
   const [loaded, setLoaded] = useState(false);
 
   return (
-    <span className={`asset-slot ${className} ${loaded ? 'asset-slot-loaded' : ''}`} role="img" aria-label={label}>
-      {!loaded && <span className="asset-slot-fallback" aria-hidden="true" />}
-      {extensionIndex < EXTENSIONS.length && (
-        <img
-          src={`/assets/icons/${name}.${EXTENSIONS[extensionIndex]}`}
-          alt=""
-          onLoad={() => setLoaded(true)}
-          onError={() => setExtensionIndex(index => index + 1)}
-        />
-      )}
+    <span className={className} role="img" aria-label={label}>
+      <span className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[inherit]">
+        {!loaded && (
+          <span
+            className="block h-full w-full rounded-[inherit] border border-line/40 bg-card dark:border-[#68644e] dark:bg-[#3b3a30]"
+            aria-hidden="true"
+          />
+        )}
+        {extIndex < EXTENSIONS.length && (
+          <img
+            src={`/assets/icons/${name}.${EXTENSIONS[extIndex]}`}
+            alt=""
+            className="h-full w-full object-contain"
+            onLoad={() => setLoaded(true)}
+            onError={() => setExtIndex((i) => i + 1)}
+          />
+        )}
+      </span>
     </span>
   );
 }

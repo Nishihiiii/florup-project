@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Home from './pages/Home.jsx';
 import Catalog from './pages/Catalog.jsx';
 import PlantDetails from './pages/PlantDetails.jsx';
@@ -11,12 +11,12 @@ import ProfileEdit from './pages/ProfileEdit.jsx';
 import Settings from './pages/Settings.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
-import Header from './components/Header.jsx';
-import Footer from './components/Footer.jsx';
 import AdminPanel from './pages/AdminPanel.jsx';
 import ExpertPanel from './pages/ExpertPanel.jsx';
+import Header from './components/Header.jsx';
+import Footer from './components/Footer.jsx';
+import { apiFetch, getToken, setToken } from './utils/api.js';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
 const PAGE_BY_PATH = {
   '/': 'home',
   '/catalog': 'catalog',
@@ -42,73 +42,39 @@ const SEO_BY_PAGE = {
   home: {
     title: 'Florup — уход за комнатными растениями',
     description:
-      'Florup — интерактивный путеводитель по комнатным растениям. ' +
-      'Изучайте каталог, разбирайтесь в уходе и диагностируйте проблемы растений.',
+      'Florup — интерактивный путеводитель по комнатным растениям. Изучайте каталог, разбирайтесь в уходе и диагностируйте проблемы растений.',
   },
   catalog: {
     title: 'Каталог комнатных растений — Florup',
-    description:
-      'Изучайте комнатные растения, их особенности, требования к поливу, ' +
-      'освещению и температуре в каталоге Florup.',
+    description: 'Изучайте комнатные растения, требования к поливу, освещению и температуре.',
   },
   plant: {
     title: 'Карточка растения — Florup',
-    description:
-      'Подробная информация о комнатном растении и рекомендации по уходу: ' +
-      'полив, освещение, температура и влажность.',
+    description: 'Подробная информация о комнатном растении и рекомендации по уходу.',
   },
   care: {
     title: 'Уход за растениями — Florup',
-    description:
-      'Планируйте уход за комнатными растениями, просматривайте календарь ' +
-      'и отмечайте регулярные задачи.',
+    description: 'Планируйте уход за комнатными растениями и отмечайте регулярные задачи.',
   },
   diagnostics: {
     title: 'Диагностика растений — Florup',
-    description:
-      'Изучайте симптомы заболеваний комнатных растений и находите ' +
-      'рекомендации по уходу и восстановлению.',
+    description: 'Справочник болезней и вредителей комнатных растений.',
   },
   map: {
-    title: 'Карта магазинов для растений — Florup',
-    description:
-      'Раздел Florup для поиска магазинов, грунтов, удобрений и других ' +
-      'товаров для комнатных растений.',
+    title: 'Карта Новосибирска — Florup',
+    description: 'Карта города Новосибирск в Florup.',
   },
   community: {
     title: 'Сообщество любителей растений — Florup',
-    description:
-      'Делитесь успехами в выращивании растений, публикуйте фотографии ' +
-      'и общайтесь с другими цветоводами.',
+    description: 'Делитесь успехами в выращивании растений и общайтесь с цветоводами.',
   },
-  profile: {
-    title: 'Профиль пользователя — Florup',
-    description: 'Личный профиль пользователя Florup.',
-  },
-  'profile-edit': {
-    title: 'Редактирование профиля — Florup',
-    description: 'Настройте имя, описание и фотографию профиля Florup.',
-  },
-  settings: {
-    title: 'Настройки — Florup',
-    description: 'Настройки пользовательского аккаунта Florup.',
-  },
-  admin: {
-    title: 'Панель администратора — Florup',
-    description: 'Управление каталогом растений Florup.',
-  },
-  expert: {
-    title: 'Панель эксперта — Florup',
-    description: 'Управление экспертными материалами Florup.',
-  },
-  login: {
-    title: 'Вход — Florup',
-    description: 'Войдите в демонстрационный аккаунт Florup.',
-  },
-  register: {
-    title: 'Регистрация — Florup',
-    description: 'Создайте демонстрационный аккаунт Florup.',
-  },
+  profile: { title: 'Профиль — Florup', description: 'Личный профиль пользователя Florup.' },
+  'profile-edit': { title: 'Редактирование профиля — Florup', description: 'Настройка профиля.' },
+  settings: { title: 'Настройки — Florup', description: 'Настройки аккаунта Florup.' },
+  admin: { title: 'Панель администратора — Florup', description: 'Управление каталогом Florup.' },
+  expert: { title: 'Панель эксперта — Florup', description: 'Экспертные материалы Florup.' },
+  login: { title: 'Вход — Florup', description: 'Вход в аккаунт Florup.' },
+  register: { title: 'Регистрация — Florup', description: 'Регистрация аккаунта Florup.' },
 };
 
 const PRIVATE_PAGES = new Set([
@@ -123,45 +89,66 @@ const PRIVATE_PAGES = new Set([
 ]);
 
 export default function App() {
-  const initialPath = window.location.pathname;
-  const initialPage = PAGE_BY_PATH[initialPath] || 'home';
-  const [page, setPage] = useState(initialPage);
+  const [page, setPage] = useState(PAGE_BY_PATH[window.location.pathname] || 'home');
   const [authModal, setAuthModal] = useState(null);
-  const [authReturnPage, setAuthReturnPage] = useState('home');
-  const [previousPage, setPreviousPage] = useState('home');
   const [plants, setPlants] = useState([]);
   const [problems, setProblems] = useState([]);
+  const [posts, setPosts] = useState([]);
   const [apiState, setApiState] = useState('loading');
   const [selectedPlant, setSelectedPlant] = useState(null);
-  const [demoUser, setDemoUser] = useState(null);
+  const [user, setUser] = useState(null);
   const [toast, setToast] = useState('');
-  const [posts, setPosts] = useState([]);
   const [plantSearch, setPlantSearch] = useState('');
-  const [symptomSearch, setSymptomSearch] = useState('');
-  const [diagnosticFile, setDiagnosticFile] = useState(null);
-  const [diagnosticMessage, setDiagnosticMessage] = useState('');
-  const [city, setCity] = useState('');
-  const [profileName, setProfileName] = useState('Никитация😎');
-  const [profileBio, setProfileBio] = useState('Люблю комнатные растения и делюсь опытом выращивания.');
 
-  useEffect(() => {
-    let alive = true;
-    Promise.all([
-      fetch(`${API_URL}/api/plants`).then(r => r.ok ? r.json() : Promise.reject()).catch(() => null),
-      fetch(`${API_URL}/api/problems`).then(r => r.ok ? r.json() : Promise.reject()).catch(() => null),
-    ]).then(([p, d]) => {
-      if (!alive) return;
-      const pData = Array.isArray(p) ? p : p?.data || p?.plants || [];
-      const dData = Array.isArray(d) ? d : d?.data || d?.problems || [];
-      setPlants(pData);
-      setProblems(dData);
-      setApiState(p || d ? 'ready' : 'offline');
-    });
-    return () => { alive = false; };
+  const notify = useCallback((message) => {
+    setToast(message);
+    window.setTimeout(() => setToast(''), 3200);
   }, []);
 
+  const refreshData = useCallback(async () => {
+    try {
+      const [plantsData, problemsData, postsData] = await Promise.all([
+        apiFetch('/api/plants').catch(() => null),
+        apiFetch('/api/problems').catch(() => null),
+        apiFetch('/api/posts').catch(() => null),
+      ]);
+      if (Array.isArray(plantsData)) setPlants(plantsData);
+      if (Array.isArray(problemsData)) setProblems(problemsData);
+      if (Array.isArray(postsData)) setPosts(postsData);
+      setApiState(plantsData || problemsData ? 'ready' : 'offline');
+    } catch {
+      setApiState('offline');
+    }
+  }, []);
+
+  const refreshUser = useCallback(async () => {
+    if (!getToken()) return;
+    try {
+      const res = await apiFetch('/api/auth/me');
+      setUser(res.user);
+    } catch {
+      setToken('');
+      setUser(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshData();
+    if (getToken()) {
+      apiFetch('/api/auth/me')
+        .then((res) => setUser(res.user))
+        .catch(() => {
+          setToken('');
+          setUser(null);
+        });
+    }
+  }, [refreshData]);
+
   const go = (next) => {
-    if (next === 'login' || next === 'register') { setAuthReturnPage(page); setAuthModal(next); return; }
+    if (next === 'login' || next === 'register') {
+      setAuthModal(next);
+      return;
+    }
     setAuthModal(null);
     const route = PATH_BY_PAGE[next] || '/';
     if (window.location.pathname !== route) {
@@ -170,29 +157,27 @@ export default function App() {
     setPage(next);
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
-  const notify = (message) => {
-    setToast(message);
-    window.setTimeout(() => setToast(''), 3200);
-  };
-  const demoLogin = (data) => {
-    setDemoUser({ email: data.email, name: data.name || data.email.split('@')[0] || 'Пользователь' });
-    if (data.name) setProfileName(data.name);
+
+  const handleAuthSuccess = (data) => {
+    setToken(data.token);
+    setUser(data.user);
     setAuthModal(null);
-    window.history.pushState({ page: 'profile' }, '', PATH_BY_PAGE.profile);
-    setPage('profile');
-    notify('Демонстрационный вход выполнен. Данные аккаунта не отправлялись на сервер.');
+    go('profile');
+    notify(`Добро пожаловать, ${data.user.name}!`);
   };
+
   const logout = () => {
-    setDemoUser(null);
+    setToken('');
+    setUser(null);
     go('home');
-    notify('Вы вышли из демонстрационного аккаунта.');
+    notify('Вы вышли из аккаунта.');
   };
+
   useEffect(() => {
     const onPopState = () => {
       setPage(PAGE_BY_PATH[window.location.pathname] || 'home');
       setAuthModal(null);
     };
-
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
@@ -200,171 +185,123 @@ export default function App() {
   useEffect(() => {
     const metadata = SEO_BY_PAGE[authModal || page] || SEO_BY_PAGE.home;
     document.title = metadata.title;
-
-    let description = document.querySelector('meta[name="description"]');
-    if (!description) {
-      description = document.createElement('meta');
-      description.name = 'description';
-      document.head.appendChild(description);
-    }
-    description.content = metadata.description;
-
-    let robots = document.querySelector('meta[name="robots"]');
-    if (!robots) {
-      robots = document.createElement('meta');
-      robots.name = 'robots';
-      document.head.appendChild(robots);
-    }
-    robots.content = authModal || PRIVATE_PAGES.has(page) ? 'noindex, nofollow' : 'index, follow';
-
-    let ogTitle = document.querySelector('meta[property="og:title"]');
-    if (!ogTitle) {
-      ogTitle = document.createElement('meta');
-      ogTitle.setAttribute('property', 'og:title');
-      document.head.appendChild(ogTitle);
-    }
-    ogTitle.content = metadata.title;
-
-    let ogDescription = document.querySelector('meta[property="og:description"]');
-    if (!ogDescription) {
-      ogDescription = document.createElement('meta');
-      ogDescription.setAttribute('property', 'og:description');
-      document.head.appendChild(ogDescription);
-    }
-    ogDescription.content = metadata.description;
+    const setMeta = (selector, attr, name, content) => {
+      let el = document.querySelector(selector);
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute(attr, name);
+        document.head.appendChild(el);
+      }
+      el.content = content;
+    };
+    setMeta('meta[name="description"]', 'name', 'description', metadata.description);
+    setMeta(
+      'meta[name="robots"]',
+      'name',
+      'robots',
+      authModal || PRIVATE_PAGES.has(page) ? 'noindex, nofollow' : 'index, follow',
+    );
+    setMeta('meta[property="og:title"]', 'property', 'og:title', metadata.title);
+    setMeta('meta[property="og:description"]', 'property', 'og:description', metadata.description);
   }, [page, authModal]);
-  const pageProps = {
+
+  const shared = {
     go,
     plants,
     problems,
+    posts,
+    setPosts,
     apiState,
     selectedPlant,
     setSelectedPlant,
-    demoUser,
+    user,
+    setUser,
     notify,
-    posts,
-    setPosts,
     plantSearch,
     setPlantSearch,
-    symptomSearch,
-    setSymptomSearch,
-    diagnosticFile,
-    setDiagnosticFile,
-    diagnosticMessage,
-    setDiagnosticMessage,
-    city,
-    setCity,
-    profileName,
-    setProfileName,
-    profileBio,
-    setProfileBio,
+    refreshData,
+    refreshUser,
     logout,
   };
-  const content = {
-    home: <Home {...pageProps} />,
-    admin: demoUser ? (
-      <AdminPanel {...pageProps} />
-    ) : (
-      <main className="page">
-        <div className="db-empty">
-          <h1>Панель администратора</h1>
-          <p>Войдите, чтобы открыть этот раздел.</p>
-          <button className="olive-button" onClick={() => go('login')}>
-            Войти
-          </button>
-        </div>
-      </main>
-    ),
-    expert: demoUser ? (
-      <ExpertPanel {...pageProps} />
-    ) : (
-      <main className="page">
-        <div className="db-empty">
-          <h1>Панель эксперта</h1>
-          <p>Войдите, чтобы открыть этот раздел.</p>
-          <button className="olive-button" onClick={() => go('login')}>
-            Войти
-          </button>
-        </div>
-      </main>
-    ),
-    catalog: <Catalog {...pageProps} />,
-    plant: <PlantDetails {...pageProps} />,
-    care: demoUser ? (
-      <Care {...pageProps} />
-    ) : (
-      <main className="page care-locked">
-        <div className="db-empty">
-          <h1>Уход за растением</h1>
-          <h2>Войдите, чтобы открыть уход за растениями</h2>
-          <p>
-            Ваш календарь, список растений и история ухода появятся после входа
-            в аккаунт.
-          </p>
-          <button className="olive-button" onClick={() => go('login')}>
-            Войти
-          </button>
-        </div>
-      </main>
-    ),
-    diagnostics: <Diagnostics {...pageProps} />,
-    map: <MapPage {...pageProps} />,
-    community: <Community {...pageProps} />,
-    profile: <Profile {...pageProps} />,
-    'profile-edit': demoUser ? (
-      <ProfileEdit {...pageProps} />
-    ) : (
-      <main className="page">
-        <div className="db-empty">
-          <h1>Редактирование профиля</h1>
-          <h2>Войдите, чтобы редактировать профиль</h2>
-          <button className="olive-button" onClick={() => go('login')}>
-            Войти
-          </button>
-        </div>
-      </main>
-    ),
-    settings: <Settings {...pageProps} />,
-    login: <Login {...pageProps} onLogin={demoLogin} onRegister={() => go('register')} />,
-    register: <Register {...pageProps} onRegister={demoLogin} onLogin={() => go('login')} />,
-  }[page] || <Home {...pageProps} />;
 
-  return <div className="app-shell">
-    <Header page={page} go={go} demoUser={demoUser} />
-    {content}
-    <Footer go={go} />
-    {authModal && (
-      <div
-        className="auth-overlay"
-        role="dialog"
-        aria-modal="true"
-        onMouseDown={(event) => {
-          if (event.target === event.currentTarget) setAuthModal(null);
-        }}
-      >
+  const renderAuthGate = (title, description) => (
+    <main className="mx-auto max-w-3xl px-4 py-16">
+      <div className="rounded-3xl bg-card p-10 text-center shadow-sm dark:bg-[#3b3a30]">
+        <h1 className="mb-3 text-3xl font-black">{title}</h1>
+        <p className="mb-6 text-sm text-ink/70 dark:text-[#f1e6d1]/75">{description}</p>
         <button
-          className="auth-overlay-close"
-          onClick={() => setAuthModal(null)}
-          aria-label="Закрыть"
+          className="rounded-full bg-olive px-7 py-3 text-sm font-bold text-cream hover:opacity-90"
+          onClick={() => go('login')}
         >
-          ×
+          Войти
         </button>
-        {authModal === 'login' ? (
-          <Login
-            onLogin={demoLogin}
-            onRegister={() => setAuthModal('register')}
-            go={go}
-          />
-        ) : (
-          <Register
-            onRegister={demoLogin}
-            onLogin={() => setAuthModal('login')}
-            go={go}
-          />
-        )}
       </div>
-    )}
-    {toast && <div className="toast" role="status">{toast}</div>}
+    </main>
+  );
 
-  </div>;
+  const pages = {
+    home: <Home {...shared} />,
+    catalog: <Catalog {...shared} />,
+    plant: <PlantDetails {...shared} />,
+    diagnostics: <Diagnostics {...shared} />,
+    map: <MapPage />,
+    community: <Community {...shared} />,
+    care: user
+      ? <Care {...shared} />
+      : renderAuthGate('Уход за растением', 'Войдите, чтобы вести свой календарь и список растений.'),
+    profile: user
+      ? <Profile {...shared} />
+      : renderAuthGate('Профиль', 'Войдите, чтобы открыть личный профиль.'),
+    'profile-edit': user
+      ? <ProfileEdit {...shared} />
+      : renderAuthGate('Редактирование профиля', 'Войдите, чтобы редактировать профиль.'),
+    settings: <Settings {...shared} />,
+    admin: user
+      ? <AdminPanel {...shared} />
+      : renderAuthGate('Панель администратора', 'Войдите, чтобы добавлять растения в каталог.'),
+    expert: user
+      ? <ExpertPanel {...shared} />
+      : renderAuthGate('Панель эксперта', 'Войдите, чтобы добавлять материалы по болезням.'),
+    login: <Login onSuccess={handleAuthSuccess} onSwitch={() => go('register')} />,
+    register: <Register onSuccess={handleAuthSuccess} onSwitch={() => go('login')} />,
+  };
+
+  return (
+    <div className="mx-auto flex min-h-screen max-w-[1600px] flex-col">
+      <Header page={page} go={go} user={user} />
+      <div className="flex-1">{pages[page] || <Home {...shared} />}</div>
+      <Footer go={go} />
+
+      {authModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          onMouseDown={(e) => e.target === e.currentTarget && setAuthModal(null)}
+        >
+          <button
+            className="fixed right-6 top-6 flex h-10 w-10 items-center justify-center rounded-full border-2 border-line bg-cream text-2xl text-ink dark:bg-[#3b3a30] dark:text-[#f1e6d1]"
+            onClick={() => setAuthModal(null)}
+            aria-label="Закрыть"
+          >
+            ×
+          </button>
+          {authModal === 'login' ? (
+            <Login onSuccess={handleAuthSuccess} onSwitch={() => setAuthModal('register')} />
+          ) : (
+            <Register onSuccess={handleAuthSuccess} onSwitch={() => setAuthModal('login')} />
+          )}
+        </div>
+      )}
+
+      {toast && (
+        <div
+          role="status"
+          className="fixed bottom-6 right-6 z-50 max-w-sm rounded-2xl bg-ink px-5 py-3 text-xs font-medium text-cream shadow-xl"
+        >
+          {toast}
+        </div>
+      )}
+    </div>
+  );
 }
