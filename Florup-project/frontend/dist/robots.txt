@@ -1,0 +1,35 @@
+User-agent: *
+Allow: /
+
+Disallow: /login
+Disallow: /register
+Disallow: /profile
+Disallow: /profile-edit
+Disallow: /settings
+Disallow: /care
+Disallow: /admin
+Disallow: /expert
+
+Sitemap: https://florup.localhost/sitemap.xml
+```
+
+#### `frontend/public/sitemap.xml`
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://florup.localhost/</loc>
+  </url>
+  <url>
+    <loc>https://florup.localhost/catalog</loc>
+  </url>
+  <url>
+    <loc>https://florup.localhost/diagnostics</loc>
+  </url>
+  <url>
+    <loc>https://florup.localhost/map</loc>
+  </url>
+  <url>
+    <loc>https://florup.localhost/community</loc>
+  </url>
+</urlset>

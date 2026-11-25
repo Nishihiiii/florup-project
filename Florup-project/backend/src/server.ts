@@ -1,0 +1,942 @@
+import 'dotenv/config';
+import crypto from 'node:crypto';
+import express, { type NextFunction, type Request, type Response } from 'express';
+import cors from 'cors';
+import { prisma } from './config/prisma.js';
+import { extractToken, requireAuth, requireRole } from './middleware/auth.js';
+import type { AuthRequest, LeafFeatures } from './types/index.js';
+import { hashPassword, hashResetCode, signToken, verifyPassword, verifyToken } from './utils/auth.js';
+import { sendResetCodeEmail } from './utils/mailer.js';
+
+const app = express();
+const PORT = Number(process.env.PORT || 3000);
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'https://florup.localhost';
+
+app.set('trust proxy', 1);
+
+app.use('/api', (_req: Request, res: Response, next: NextFunction) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  next();
+});
+
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      if (
+        !origin ||
+        origin === CLIENT_ORIGIN ||
+        origin.startsWith('http://localhost') ||
+        origin.startsWith('https://florup.localhost')
+      ) {
+        return cb(null, true);
+      }
+      return cb(null, true);
+    },
+    credentials: true,
+  }),
+);
+app.use(express.json({ limit: '5mb' }));
+
+async function ensureDefaultRole() {
+  return prisma.roles.upsert({
+    where: { name: 'user' },
+    update: {},
+    create: { name: 'user' },
+  });
+}
+
+async function formatUser(profileId: string) {
+  const [profile, receivedLikes] = await Promise.all([
+    prisma.profiles.findUnique({
+      where: { id: profileId },
+      include: {
+        users: { select: { email: true } },
+        roles: { select: { name: true } },
+        _count: { select: { user_plants: true, posts: true } },
+      },
+    }),
+    prisma.post_likes.count({
+      where: { posts: { user_id: profileId } },
+    }),
+  ]);
+  if (!profile) return null;
+
+  return {
+    id: profile.id,
+    email: profile.users?.email || '',
+    username: profile.username,
+    name: profile.full_name || profile.username,
+    bio: profile.bio || '',
+    avatar_url: profile.avatar_url || '',
+    push_notifications: Boolean(profile.push_notifications),
+    email_notifications: Boolean(profile.email_notifications),
+    role: profile.roles?.name || 'user',
+    stats: {
+      plants: profile._count.user_plants,
+      posts: profile._count.posts,
+      likes: receivedLikes,
+    },
+  };
+}
+
+
+app.get('/api/health', async (_req: Request, res: Response) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ status: 'ok', db: 'connected', timestamp: new Date().toISOString() });
+  } catch (err) {
+    res.status(500).json({ status: 'error', error: (err as Error).message });
+  }
+});
+
+app.get('/api/facts', async (_req: Request, res: Response) => {
+  try {
+    const facts = await prisma.facts.findMany({
+      where: { is_active: true },
+      orderBy: { id: 'asc' },
+    });
+    res.json(facts);
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.post('/api/auth/register', async (req: Request, res: Response) => {
+  try {
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const password = String(req.body.password || '');
+    const fullName = String(req.body.name || '').trim();
+
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ error: 'Введите корректный email' });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Пароль должен быть не короче 6 символов' });
+    }
+
+    const existing = await prisma.users.findFirst({
+      where: { email, deleted_at: null },
+    });
+    if (existing) {
+      return res.status(409).json({ error: 'Пользователь с таким email уже существует' });
+    }
+
+    const role = await ensureDefaultRole();
+    const userId = crypto.randomUUID();
+    const baseUsername = (fullName || email.split('@')[0])
+      .replace(/[^a-zA-Zа-яА-Я0-9_]/g, '_')
+      .slice(0, 30);
+    const username = `${baseUsername || 'user'}_${crypto.randomBytes(2).toString('hex')}`;
+    const passwordHash = hashPassword(password);
+    const now = new Date();
+
+    await prisma.$transaction(async (tx) => {
+      await tx.users.create({
+        data: {
+          id: userId,
+          email,
+          encrypted_password: passwordHash,
+          raw_user_meta_data: { full_name: fullName || baseUsername },
+          created_at: now,
+          updated_at: now,
+        },
+      });
+      await tx.profiles.create({
+        data: {
+          id: userId,
+          role_id: role.id,
+          username,
+          full_name: fullName || email.split('@')[0],
+          bio: 'Люблю комнатные растения и делюсь опытом выращивания.',
+        },
+      });
+    });
+
+    const user = await formatUser(userId);
+    if (!user) return res.status(500).json({ error: 'Ошибка создания профиля' });
+    const token = signToken({ sub: userId, email, role: user.role });
+    return res.status(201).json({ token, user });
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.post('/api/auth/login', async (req: Request, res: Response) => {
+  try {
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const password = String(req.body.password || '');
+
+    const authUser = await prisma.users.findFirst({
+      where: { email, deleted_at: null },
+    });
+    if (!authUser || !verifyPassword(password, authUser.encrypted_password)) {
+      return res.status(401).json({ error: 'Неверный email или пароль' });
+    }
+
+    const role = await ensureDefaultRole();
+    const profile = await prisma.profiles.findUnique({ where: { id: authUser.id } });
+    if (!profile) {
+      await prisma.profiles.create({
+        data: {
+          id: authUser.id,
+          role_id: role.id,
+          username: `${email.split('@')[0]}_${crypto.randomBytes(2).toString('hex')}`,
+          full_name: email.split('@')[0],
+        },
+      });
+    }
+
+    const user = await formatUser(authUser.id);
+    if (!user) return res.status(404).json({ error: 'Профиль не найден' });
+    const token = signToken({ sub: authUser.id, email, role: user.role });
+    return res.json({ token, user });
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.post('/api/auth/forgot-password', async (req: Request, res: Response) => {
+  try {
+    const email = String(req.body.email || '').trim().toLowerCase();
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ error: 'Введите корректный email' });
+    }
+
+    const user = await prisma.users.findFirst({ where: { email, deleted_at: null } });
+    if (!user) {
+      return res.status(404).json({ error: 'Аккаунт с таким email не найден' });
+    }
+
+    const code = String(crypto.randomInt(100000, 999999));
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+    await prisma.password_reset_codes.create({
+      data: {
+        email,
+        code_hash: hashResetCode(code),
+        expires_at: expiresAt,
+      },
+    });
+
+    const mailRes = await sendResetCodeEmail(email, code);
+    return res.json({
+      message: mailRes.sent
+        ? 'Код подтверждения отправлен на вашу почту.'
+        : 'SMTP не настроен — используйте тестовый код ниже.',
+      devCode: mailRes.previewCode,
+    });
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.post('/api/auth/reset-password', async (req: Request, res: Response) => {
+  try {
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const code = String(req.body.code || '').trim();
+    const newPassword = String(req.body.newPassword || '');
+
+    if (!email || !code || newPassword.length < 6) {
+      return res.status(400).json({ error: 'Заполните email, код и пароль (от 6 символов)' });
+    }
+
+    const record = await prisma.password_reset_codes.findFirst({
+      where: {
+        email,
+        used_at: null,
+        expires_at: { gt: new Date() },
+      },
+      orderBy: { created_at: 'desc' },
+    });
+
+    if (!record || record.code_hash !== hashResetCode(code)) {
+      return res.status(400).json({ error: 'Неверный или истёкший код подтверждения' });
+    }
+
+    const user = await prisma.users.findFirst({ where: { email, deleted_at: null } });
+    if (!user) {
+      return res.status(404).json({ error: 'Пользователь не найден' });
+    }
+
+    await prisma.$transaction([
+      prisma.users.update({
+        where: { id: user.id },
+        data: { encrypted_password: hashPassword(newPassword), updated_at: new Date() },
+      }),
+      prisma.password_reset_codes.update({
+        where: { id: record.id },
+        data: { used_at: new Date() },
+      }),
+    ]);
+
+    return res.json({ message: 'Пароль успешно обновлён!' });
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.get('/api/auth/me', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const user = await formatUser(req.user!.sub);
+    if (!user) return res.status(404).json({ error: 'Профиль не найден' });
+    return res.json({ user });
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.patch('/api/auth/profile', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const data: Record<string, unknown> = { updated_at: new Date() };
+    if (req.body.name !== undefined) data.full_name = String(req.body.name).trim().slice(0, 255);
+    if (req.body.bio !== undefined) data.bio = String(req.body.bio).slice(0, 500);
+    if (req.body.avatar_url !== undefined) data.avatar_url = String(req.body.avatar_url);
+    if (req.body.push_notifications !== undefined)
+      data.push_notifications = Boolean(req.body.push_notifications);
+    if (req.body.email_notifications !== undefined)
+      data.email_notifications = Boolean(req.body.email_notifications);
+
+    await prisma.profiles.update({
+      where: { id: req.user!.sub },
+      data,
+    });
+    const user = await formatUser(req.user!.sub);
+    return res.json({ user });
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.get('/api/plants', async (_req: Request, res: Response) => {
+  try {
+    const plants = await prisma.plants.findMany({
+      orderBy: { created_at: 'desc' },
+    });
+    return res.json(plants);
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.post('/api/plants', requireAuth, requireRole('admin'), async (req: Request, res: Response) => {
+  try {
+    const name = String(req.body.name || '').trim();
+    if (!name) return res.status(400).json({ error: 'Название растения обязательно' });
+
+    const plant = await prisma.plants.create({
+      data: {
+        name,
+        latin_name: req.body.latin_name ? String(req.body.latin_name).trim() : null,
+        description: req.body.description ? String(req.body.description).trim() : null,
+        care_watering_text: req.body.care_watering_text
+          ? String(req.body.care_watering_text).trim()
+          : null,
+        care_lighting_text: req.body.care_lighting_text
+          ? String(req.body.care_lighting_text).trim()
+          : null,
+        care_temp_text: req.body.care_temp_text ? String(req.body.care_temp_text).trim() : null,
+        water_interval_days: Number(req.body.water_interval_days) || 7,
+        fertilize_interval_days: Number(req.body.fertilize_interval_days) || 30,
+        spray_interval_days: Number(req.body.spray_interval_days) || 0,
+        image_url: req.body.image_url ? String(req.body.image_url).trim() : null,
+        is_verified: true,
+      },
+    });
+    return res.status(201).json(plant);
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+
+app.get('/api/problems', async (_req: Request, res: Response) => {
+  try {
+    const problems = await prisma.plant_problems.findMany({
+      include: {
+        problem_types: true,
+        problem_symptom_relations: { include: { symptoms: true } },
+        plant_problem_relations: { include: { plants: true } },
+      },
+      orderBy: { created_at: 'desc' },
+    });
+
+    return res.json(
+      problems.map((p) => ({
+        ...p,
+        symptoms: p.problem_symptom_relations.map((r) => r.symptoms),
+        plants: p.plant_problem_relations.map((r) => r.plants),
+      })),
+    );
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.get('/api/symptoms', async (_req: Request, res: Response) => {
+  try {
+    const symptoms = await prisma.symptoms.findMany({
+      include: {
+        problem_symptom_relations: {
+          include: {
+            plant_problems: {
+              include: {
+                problem_types: true,
+                plant_problem_relations: { include: { plants: true } },
+              },
+            },
+          },
+        },
+      },
+      orderBy: { id: 'asc' },
+    });
+
+    return res.json(
+      symptoms.map((s) => ({
+        id: s.id,
+        name: s.name,
+        description: s.description || '',
+        image_url: s.image_url || '',
+        color_profile: s.color_profile || {},
+        problems: s.problem_symptom_relations.map((rel) => ({
+          ...rel.plant_problems,
+          plants: rel.plant_problems.plant_problem_relations.map((pr) => pr.plants),
+        })),
+      })),
+    );
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+function inferColorProfile(name: string, description: string): Record<string, number> {
+  const text = `${name} ${description}`.toLowerCase();
+  if (text.includes('желт') || text.includes('хлороз')) {
+    return { green: 35, yellow: 45, brown: 15, white: 5 };
+  }
+  if (text.includes('бел') || text.includes('налет') || text.includes('мучнист') || text.includes('паутин')) {
+    return { green: 45, yellow: 10, brown: 10, white: 35 };
+  }
+  if (text.includes('коричнев') || text.includes('буры') || text.includes('сохн') || text.includes('пятн') || text.includes('гнил')) {
+    return { green: 35, yellow: 15, brown: 45, white: 5 };
+  }
+  if (text.includes('увяд') || text.includes('вян') || text.includes('скруч')) {
+    return { green: 50, yellow: 25, brown: 20, white: 5 };
+  }
+  return { green: 60, yellow: 15, brown: 15, white: 10 };
+}
+
+app.post('/api/diagnostics/analyze', async (req: AuthRequest, res: Response) => {
+  try {
+    const features = (req.body.features || {}) as Partial<LeafFeatures>;
+    const yellowPct = Math.round((features.yellowRatio || 0) * 100);
+    const brownPct = Math.round((features.brownRatio || 0) * 100);
+    const whitePct = Math.round((features.whiteRatio || 0) * 100);
+    const greenPct = Math.round((features.greenRatio || 0) * 100);
+
+    const symptoms = await prisma.symptoms.findMany({
+      include: {
+        problem_symptom_relations: {
+          include: {
+            plant_problems: {
+              include: { plant_problem_relations: { include: { plants: true } } },
+            },
+          },
+        },
+      },
+    });
+
+    const ranked = symptoms
+      .map((s) => {
+        const raw = (s.color_profile || {}) as Record<string, number>;
+        const hasProfile =
+          typeof raw.yellow === 'number' ||
+          typeof raw.brown === 'number' ||
+          typeof raw.white === 'number' ||
+          typeof raw.green === 'number';
+
+        const profile = hasProfile ? raw : inferColorProfile(s.name, s.description || '');
+
+        const dy = Math.abs(yellowPct - (profile.yellow ?? 15)) * 1.4;
+        const db = Math.abs(brownPct - (profile.brown ?? 15)) * 1.4;
+        const dw = Math.abs(whitePct - (profile.white ?? 10)) * 1.5;
+        const dg = Math.abs(greenPct - (profile.green ?? 50)) * 0.6;
+        const distance = dy + db + dw + dg;
+        const confidence = Math.max(18, Math.min(97, Math.round(100 - distance * 0.85)));
+
+        return {
+          id: s.id,
+          name: s.name,
+          description: s.description || '',
+          image_url: s.image_url || '',
+          confidence,
+          problems: s.problem_symptom_relations.map((rel) => ({
+            ...rel.plant_problems,
+            plants: rel.plant_problems.plant_problem_relations.map((pr) => pr.plants),
+          })),
+        };
+      })
+      .sort((a, b) => b.confidence - a.confidence)
+      .slice(0, 4);
+
+    const tokenUser = verifyToken(extractToken(req));
+    if (tokenUser && ranked[0]?.problems[0]) {
+      await prisma.user_diagnostic_history
+        .create({
+          data: {
+            user_id: tokenUser.sub,
+            scanned_image_url: req.body.imageDataUrl
+              ? String(req.body.imageDataUrl).slice(0, 50000)
+              : null,
+            matched_problem_id: ranked[0].problems[0].id,
+          },
+        })
+        .catch(() => {});
+    }
+
+    return res.json({
+      metrics: { green: greenPct, yellow: yellowPct, brown: brownPct, white: whitePct },
+      symptoms: ranked,
+    });
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.post(
+  '/api/problems',
+  requireAuth,
+  requireRole('expert', 'admin'),
+  async (req: Request, res: Response) => {
+    try {
+      const name = String(req.body.name || '').trim();
+      const description = String(req.body.description || '').trim();
+      const treatment = String(req.body.treatment || '').trim();
+      const typeName = String(req.body.type || 'Болезнь').trim();
+      const imageUrl = req.body.image_url ? String(req.body.image_url).trim() : null;
+      const symptomName = req.body.symptom_name ? String(req.body.symptom_name).trim() : '';
+
+      if (!name || !description || !treatment) {
+        return res.status(400).json({ error: 'Заполните название, описание и лечение' });
+      }
+
+      const problemType = await prisma.problem_types.upsert({
+        where: { name: typeName },
+        update: {},
+        create: { name: typeName },
+      });
+
+      const problem = await prisma.plant_problems.create({
+        data: {
+          name,
+          description,
+          treatment,
+          image_url: imageUrl,
+          problem_type_id: problemType.id,
+        },
+        include: { problem_types: true },
+      });
+
+      if (symptomName) {
+        const symptom = await prisma.symptoms.upsert({
+          where: { name: symptomName },
+          update: imageUrl ? { image_url: imageUrl } : {},
+          create: { name: symptomName, description, image_url: imageUrl },
+        });
+        await prisma.problem_symptom_relations.create({
+          data: { problem_id: problem.id, symptom_id: symptom.id },
+        });
+      }
+
+      return res.status(201).json(problem);
+    } catch (err) {
+      return res.status(500).json({ error: (err as Error).message });
+    }
+  },
+);
+
+
+app.get('/api/care-actions', async (_req: Request, res: Response) => {
+  try {
+    const actions = await prisma.care_action_types.findMany({ orderBy: { id: 'asc' } });
+    return res.json(actions);
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.get('/api/user-plants', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const items = await prisma.user_plants.findMany({
+      where: { user_id: req.user!.sub },
+      include: {
+        plants: true,
+        care_logs: {
+          include: { care_action_types: true },
+          orderBy: { action_date: 'desc' },
+          take: 15,
+        },
+      },
+      orderBy: { created_at: 'desc' },
+    });
+    return res.json(items);
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.post('/api/user-plants', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const plantId = req.body.plant_id ? String(req.body.plant_id) : null;
+    const nickname = String(req.body.nickname || '').trim() || null;
+    let imageUrl = req.body.image_url ? String(req.body.image_url).trim() : null;
+
+    if (plantId && !imageUrl) {
+      const basePlant = await prisma.plants.findUnique({
+        where: { id: plantId },
+        select: { image_url: true },
+      });
+      imageUrl = basePlant?.image_url || null;
+    }
+
+    const item = await prisma.user_plants.create({
+      data: {
+        user_id: req.user!.sub,
+        plant_id: plantId,
+        nickname,
+        image_url: imageUrl,
+      },
+      include: {
+        plants: true,
+        care_logs: { include: { care_action_types: true } },
+      },
+    });
+    return res.status(201).json(item);
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.delete('/api/user-plants/:id', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const id = String(req.params.id);
+    const existing = await prisma.user_plants.findUnique({ where: { id } });
+    if (!existing || existing.user_id !== req.user!.sub) {
+      return res.status(404).json({ error: 'Растение не найдено' });
+    }
+    await prisma.user_plants.delete({ where: { id } });
+    return res.json({ ok: true });
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.get('/api/care-logs', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const logs = await prisma.care_logs.findMany({
+      where: { user_plants: { user_id: req.user!.sub } },
+      include: {
+        care_action_types: true,
+        user_plants: { include: { plants: true } },
+      },
+      orderBy: { action_date: 'desc' },
+      take: 50,
+    });
+    return res.json(logs);
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.post('/api/care-logs', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const { user_plant_id, action_name, notes, action_date } = req.body;
+    const userPlant = await prisma.user_plants.findUnique({ where: { id: String(user_plant_id) } });
+    if (!userPlant || userPlant.user_id !== req.user!.sub) {
+      return res.status(404).json({ error: 'Растение пользователя не найдено' });
+    }
+
+    const actionType = await prisma.care_action_types.upsert({
+      where: { name: String(action_name || 'Полив') },
+      update: {},
+      create: { name: String(action_name || 'Полив') },
+    });
+
+    const parsedDate = action_date ? new Date(String(action_date)) : new Date();
+    const validDate = Number.isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+
+    const log = await prisma.care_logs.create({
+      data: {
+        user_plant_id: String(user_plant_id),
+        action_type_id: actionType.id,
+        action_date: validDate,
+        notes: notes ? String(notes).trim() : null,
+      },
+      include: {
+        care_action_types: true,
+        user_plants: { include: { plants: true } },
+      },
+    });
+    return res.status(201).json(log);
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+
+app.get('/api/posts', async (req: AuthRequest, res: Response) => {
+  try {
+    const currentUser = verifyToken(extractToken(req));
+    const posts = await prisma.posts.findMany({
+      include: {
+        profiles: { select: { id: true, full_name: true, username: true, avatar_url: true } },
+        post_images: { orderBy: { sort_order: 'asc' }, take: 1 },
+        post_likes: { select: { user_id: true } },
+        post_comments: {
+          include: { profiles: { select: { full_name: true, username: true } } },
+          orderBy: { created_at: 'asc' },
+        },
+      },
+      orderBy: { created_at: 'desc' },
+      take: 50,
+    });
+
+    return res.json(
+      posts.map((p) => ({
+        id: p.id,
+        user_id: p.user_id,
+        author: p.profiles?.full_name || p.profiles?.username || 'Пользователь',
+        authorAvatar: p.profiles?.avatar_url || '',
+        content: p.content,
+        imageUrl: p.post_images?.[0]?.image_url || '',
+        likes: p.post_likes.length,
+        likedByMe: currentUser ? p.post_likes.some((l) => l.user_id === currentUser.sub) : false,
+        comments: p.post_comments.map((c) => ({
+          id: c.id,
+          author: c.profiles?.full_name || c.profiles?.username || 'Пользователь',
+          content: c.content,
+          created_at: c.created_at,
+        })),
+        created_at: p.created_at,
+      })),
+    );
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.post('/api/posts', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const content = String(req.body.content || '').trim();
+    const imageUrl = req.body.imageUrl ? String(req.body.imageUrl) : '';
+    if (!content) return res.status(400).json({ error: 'Текст публикации обязателен' });
+
+    const created = await prisma.posts.create({
+      data: {
+        user_id: req.user!.sub,
+        content,
+        post_images: imageUrl ? { create: [{ image_url: imageUrl, sort_order: 0 }] } : undefined,
+      },
+      include: {
+        profiles: { select: { id: true, full_name: true, username: true, avatar_url: true } },
+        post_images: true,
+      },
+    });
+
+    return res.status(201).json({
+      id: created.id,
+      user_id: created.user_id,
+      author: created.profiles?.full_name || created.profiles?.username || 'Пользователь',
+      authorAvatar: created.profiles?.avatar_url || '',
+      content: created.content,
+      imageUrl: created.post_images?.[0]?.image_url || '',
+      likes: 0,
+      likedByMe: false,
+      comments: [],
+      created_at: created.created_at,
+    });
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.delete('/api/posts/:id', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const id = String(req.params.id);
+    const [post, profile] = await Promise.all([
+      prisma.posts.findUnique({ where: { id } }),
+      prisma.profiles.findUnique({
+        where: { id: req.user!.sub },
+        include: { roles: { select: { name: true } } },
+      }),
+    ]);
+
+    if (!post) return res.status(404).json({ error: 'Публикация не найдена' });
+    const isAdmin = profile?.roles?.name === 'admin';
+    if (post.user_id !== req.user!.sub && !isAdmin) {
+      return res.status(403).json({ error: 'Нет прав для удаления этой записи' });
+    }
+
+    await prisma.posts.delete({ where: { id } });
+    return res.json({ ok: true });
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.post('/api/posts/:id/like', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const postId = String(req.params.id);
+    const userId = req.user!.sub;
+    const existing = await prisma.post_likes.findUnique({
+      where: { post_id_user_id: { post_id: postId, user_id: userId } },
+    });
+
+    if (existing) {
+      await prisma.post_likes.delete({
+        where: { post_id_user_id: { post_id: postId, user_id: userId } },
+      });
+    } else {
+      await prisma.post_likes.create({ data: { post_id: postId, user_id: userId } });
+    }
+
+    const likes = await prisma.post_likes.count({ where: { post_id: postId } });
+    return res.json({ likes, likedByMe: !existing });
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.post('/api/posts/:id/comments', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const content = String(req.body.content || '').trim();
+    if (!content) return res.status(400).json({ error: 'Комментарий не может быть пустым' });
+
+    const comment = await prisma.post_comments.create({
+      data: {
+        post_id: String(req.params.id),
+        user_id: req.user!.sub,
+        content,
+      },
+      include: { profiles: { select: { full_name: true, username: true } } },
+    });
+
+    return res.status(201).json({
+      id: comment.id,
+      author: comment.profiles?.full_name || comment.profiles?.username || 'Пользователь',
+      content: comment.content,
+      created_at: comment.created_at,
+    });
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+
+app.get('/api/cities', async (_req: Request, res: Response) => {
+  try {
+    const cities = await prisma.cities.findMany({ orderBy: { name: 'asc' } });
+    return res.json(
+      cities.map((c) => ({
+        id: c.id,
+        name: c.name,
+        latitude: c.latitude ? Number(c.latitude) : null,
+        longitude: c.longitude ? Number(c.longitude) : null,
+      })),
+    );
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.get('/api/product-categories', async (_req: Request, res: Response) => {
+  try {
+    const categories = await prisma.product_categories.findMany({ orderBy: { id: 'asc' } });
+    return res.json(categories);
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.get('/api/stores', async (_req: Request, res: Response) => {
+  try {
+    const stores = await prisma.stores.findMany({
+      include: {
+        cities: true,
+        store_types: true,
+        store_inventory: { include: { product_categories: true } },
+        store_products: { where: { in_stock: true } },
+        store_reviews: {
+          include: { profiles: { select: { full_name: true, username: true } } },
+          orderBy: { created_at: 'desc' },
+        },
+      },
+      orderBy: { name: 'asc' },
+    });
+
+    return res.json(
+      stores.map((s) => ({
+        id: s.id,
+        city_id: s.city_id,
+        name: s.name,
+        city: s.cities?.name || 'Новосибирск',
+        type: s.store_types?.name || 'Магазин растений',
+        address: s.address,
+        latitude: Number(s.latitude),
+        longitude: Number(s.longitude),
+        working_hours: s.working_hours || 'Уточняйте по телефону',
+        contact_info: s.contact_info || '',
+        categories: s.store_inventory.map((i) => i.product_categories.name),
+        products: s.store_products.map((p) => ({
+          id: p.id,
+          name: p.name,
+          price: p.price,
+        })),
+        reviews: s.store_reviews.map((r) => ({
+          id: r.id,
+          author: r.profiles?.full_name || r.profiles?.username || 'Пользователь',
+          rating: r.rating || 5,
+          text: r.review_text || '',
+        })),
+      })),
+    );
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.post('/api/stores/:id/reviews', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const storeId = String(req.params.id);
+    const rating = Math.min(5, Math.max(1, Number(req.body.rating) || 5));
+    const reviewText = String(req.body.text || '').trim();
+    if (!reviewText) return res.status(400).json({ error: 'Напишите текст отзыва' });
+
+    const created = await prisma.store_reviews.create({
+      data: {
+        store_id: storeId,
+        user_id: req.user!.sub,
+        rating,
+        review_text: reviewText,
+      },
+      include: { profiles: { select: { full_name: true, username: true } } },
+    });
+
+    return res.status(201).json({
+      id: created.id,
+      author: created.profiles?.full_name || created.profiles?.username || 'Пользователь',
+      rating: created.rating || 5,
+      text: created.review_text || '',
+    });
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  console.error('[API error]', err);
+  res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Florup API listening on http://0.0.0.0:${PORT}`);
+});
